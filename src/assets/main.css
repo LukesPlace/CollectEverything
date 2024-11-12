@@ -1,6 +1,8 @@
 @import './base.css';
 :root {
   --primary-green: hsla(160, 100%, 37%, 1);
+  --primary-delete: rgb(180, 28, 4);
+  --primary-delete-darken: rgb(109, 17, 3);
   --primary-green-darken: rgb(1, 118, 79);
 }
 
@@ -45,6 +47,32 @@ button {
   background-color: #c0c0c0; /* Gray out when disabled */
   cursor: not-allowed;
 }
+
+.delete-btn {
+  background-color: var(--primary-delete);
+  color: white;
+  padding: 0.75em 1.5em;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.delete-btn:hover {
+  background-color:  var(--primary-delete-darken);
+}
+
+.delete-btn:active {
+  transform: scale(0.98); /* Slight shrink on click */
+}
+
+.delete-btn:disabled {
+  background-color: #c0c0c0; /* Gray out when disabled */
+  cursor: not-allowed;
+}
+
 
 .secondary-btn {
   color: #c0c0c0;

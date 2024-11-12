@@ -3,14 +3,15 @@
     <div class="dialog-content">
       <header class="dialog-header">
         <h2>{{ title }}</h2>
-        <button @click="close" class="dialog-close-btn">X</button>
+        <button @click="onClose" class="dialog-close-btn">X</button>
       </header>
       <div class="dialog-body">
         <slot />
       </div>
       <footer class="dialog-footer">
-        <button @click="close" class="secondary-btn">Close</button>
-        <button @click="save" class="primary-btn">Save</button>
+        <button @click="onClose" class="secondary-btn">Close</button>
+        <button v-if="!isDeleteDialog"  @click="onSave" class="primary-btn">Save</button>
+        <button v-else  @click="onDelete" class="delete-btn">Delete</button>
       </footer>
     </div>
   </div>
@@ -20,8 +21,9 @@
 import { ref, defineProps, watch } from 'vue';
 
 const props = defineProps<{
-  title: string
-  show: boolean
+  title: string;
+  show: boolean;
+  isDeleteDialog?: boolean
 }>();
 
 // Internal state to manage dialog visibility
@@ -33,13 +35,16 @@ watch(() => props.show, (newVal) => {
 });
 
 // Emit close event
-const emit = defineEmits(['close', 'save'])
-function close() {
+const emit = defineEmits(['close', 'save', 'delete'])
+function onClose() {
   isVisible.value = false;
   emit('close');
 }
-function save() {
+function onSave() {
   emit('save');
+}
+function onDelete() {
+  emit('delete');
 }
 </script>
 

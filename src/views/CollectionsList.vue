@@ -17,12 +17,25 @@ function onEditCollection(collectionId: string) {
   showEditDialog.value = true;
 }
 
+function onDeleteCollection(collectionId: string) {
+  editingCollection.value = collections?.find(c => c.id == collectionId) ?? null;
+  editingCollectionName.value = editingCollection.value!.name;
+  showEditDialog.value = true;
+}
+
 function onDialogClose() {
   showEditDialog.value = false;
 }
 
 function onDialogSave() {
   editingCollection.value!.name = editingCollectionName.value!;
+  showEditDialog.value = false;
+  collectionStore.saveCollection();
+}
+
+function onDialogDelete() {
+  const collectionToDelete = collections?.find(c => c.id == editingCollection.value?.id) ?? null;
+  collectionStore.collection = collections?.filter(c => c.id !== collectionToDelete?.id)!;
   showEditDialog.value = false;
   collectionStore.saveCollection();
 }
@@ -41,7 +54,15 @@ function onDialogSave() {
         </thead>
         <tr v-for="collection in collections">
           <td> {{ collection.name }}</td>
-          <td><button @click="onEditCollection(collection.id)" class="primary-btn">Edit</button></td>
+          <td class="actions">
+            <button @click="onEditCollection(collection.id)" class="primary-btn">Edit</button>
+            <button @click="onDeleteCollection(collection.id)" class="delete-btn">Delete</button>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" class="add-new">
+            <button class="primary-btn">Add new</button>
+          </td>
         </tr>
       </table>
     </div>
@@ -50,6 +71,11 @@ function onDialogSave() {
     <div>
       <span>Collection Name</span>
       <input type="text" v-model="editingCollectionName">
+    </div>
+  </confirmation-dialog>
+  <confirmation-dialog title="Delete collection?" :show="showEditDialog" :is-delete-dialog="true" @close="onDialogClose" @delete="onDialogDelete">
+    <div>
+      <span>Really delete this collection {{ editingCollectionName }}</span>
     </div>
   </confirmation-dialog>
 </template>
@@ -65,5 +91,22 @@ function onDialogSave() {
     align-items: center;
     padding-left: 5%;
   }
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.add-new {
+  text-align: center;
+}
+.add-new-btn {
+  background: none;
+  border: none;
+  font-size: 1.2em;
+  cursor: pointer;
+  color:white;
+
 }
 </style>
