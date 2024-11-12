@@ -20,7 +20,7 @@ import SupportIcon from './icons/IconSupport.vue'
     <template #icon>
       <DocumentationIcon />
     </template>
-    <template #heading><RouterLink to="/collection">Collection</RouterLink></template>
+    <template #heading><RouterLink to="/collection/test">Collection</RouterLink></template>
       Get an extensive in depth look at your current collection.
   </WelcomeItem>
 

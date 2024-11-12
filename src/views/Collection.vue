@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import cardList from '@/components/CardList.vue';
-
+import CollectionItems from '@/components/CollectionItems.vue';
 import { ref, onMounted } from 'vue'
+import { useCollectionStore } from '@/stores/collection';
 
+const collectionStore = useCollectionStore();
+collectionStore.loadCollection();
 // Dynamically import all images in a folder
 const cards = import.meta.glob('@/assets/OpCards/*.png')
 
@@ -15,12 +17,17 @@ onMounted(async () => {
   const resolvedImages = await Promise.all(imports.map(img => img()))
   imageUrls.value = resolvedImages.map(module => module.default)
 })
+
+function onSaveCollection() {
+  collectionStore.saveCollection();
+}
 </script>
 
 <template>
   <div class="collection">
     <h1>Your Collection</h1>
-    <card-list :cards="imageUrls"></card-list>
+    <button @click="onSaveCollection" class="primary-btn">Save Collection</button>
+    <collection-items :cards="imageUrls"></collection-items>
   </div>
 </template>
 

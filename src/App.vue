@@ -11,7 +11,7 @@ import { RouterLink, RouterView } from 'vue-router'
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/collections">Collections</RouterLink>
-        <RouterLink to="/collection">Collection</RouterLink>
+        <RouterLink to="/collection/test">Collection</RouterLink>
       </nav>
     </div>
   </header>
@@ -27,7 +27,7 @@ header {
   background-color: var(--color-background);
   top: 0px;
   line-height: 1.5;
-  width: 100%;
+  width: 100vw;
   max-height: 100vh;
   padding: 1rem;
   align-items: center;
@@ -72,7 +72,7 @@ nav a:first-of-type {
     top: 0px;
     line-height: 1.5;
     max-height: 100vh;
-    width: 100%;
+    width: 100vw;
     align-items: center;
   }
 
