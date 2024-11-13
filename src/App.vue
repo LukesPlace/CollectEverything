@@ -18,7 +18,6 @@ function onHomeButtonClick() {
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/collections">Collections</RouterLink>
-        <RouterLink to="/collection/test">Collection</RouterLink>
       </nav>
     </div>
   </header>

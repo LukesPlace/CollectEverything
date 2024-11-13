@@ -2,6 +2,7 @@
 import { type CollectionItem } from '@/stores/collection';
 import CardDetails from './CardDetails.vue';
 import { ref, type Ref } from 'vue';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 const props = defineProps<{
   collectionItem: CollectionItem
@@ -19,19 +20,18 @@ function onDialogClose() {
 
 function onDialogSave() {
   showCardDetails.value = false;
-
 }
 
 
 </script>
 
 <template>
-  <div class="card">
-    <img src="https://via.placeholder.com/300x200" alt="Card image" class="card-image" />
+  <div @click="onShowCardDetails" :class="['card', { 'card-incomplete': !collectionItem.completed }]">
+    <img :src="collectionItem.imageBase64 ?? 'https://via.placeholder.com/300x200'" alt="Card image" class="card-image" />
+    <font-awesome-icon v-if="!collectionItem.completed" :icon="['fas', 'lock']" class="lock-icon" />
     <div class="card-content">
       <h3 class="card-title">{{ props.collectionItem.name ?? 'New item'}}</h3>
       <p class="card-description">{{ props.collectionItem.description }}</p>
-      <button @click="onShowCardDetails" class="card-button">Details</button>
     </div>
   </div>
 
@@ -40,13 +40,15 @@ function onDialogSave() {
 
 <style scoped>
 .card {
+  cursor: pointer;
+  height: 20rem;
+  width: 300px;
   background-color: var(--card-bg, #1e1e1e);
   color: var(--text-color, #ffffff);
   border-radius: 12px;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  max-width: 300px;
   margin: 1rem;
   display: flex;
   flex-direction: column;
@@ -59,7 +61,7 @@ function onDialogSave() {
 
 .card-image {
   width: 100%;
-  height: auto;
+  height: 50%;
   object-fit: cover;
 }
 
@@ -97,5 +99,36 @@ function onDialogSave() {
 
 .card-button:hover {
   background-color: #28a745;
+}
+
+
+.card-incomplete {
+  background-color: #f0f0f0;
+  color: #888888;
+  opacity: 0.3;
+  position: relative;
+}
+
+/* Optional "locked" overlay for incomplete state */
+/* .card--incomplete::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.5rem;
+  color: rgba(0, 0, 0, 0.2);
+  text-align: center;
+} */
+
+/* Lock icon styling */
+.lock-icon {
+  height: 3rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  color: rgba(0, 0, 0, 0.8);
+  pointer-events: none; /* Prevents interaction with the icon */
 }
 </style>

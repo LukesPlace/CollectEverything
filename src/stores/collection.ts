@@ -16,6 +16,7 @@ export interface CollectionItem {
   name: string;
   description: string | null;
   completed: boolean;
+  imageBase64: string | null;
 }
 export const useCollectionStore = defineStore('collection', {
   state: (): CollectionState => ({

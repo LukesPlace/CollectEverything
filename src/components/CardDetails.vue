@@ -1,7 +1,7 @@
 <template>
   <div v-if="isVisible" class="modal-overlay" @click.self="closeModal">
     <div class="modal-content">
-      <h2>Edit Card Details</h2>
+      <h2>Edit Item Details</h2>
       <div class="modal-body">
         <label for="name">Name:</label>
         <input type="text" v-model="localName" id="name" />
@@ -12,7 +12,9 @@
         <label>
           <checkbox v-model="localCompleted"></checkbox>
         </label>
+        <FileInput v-model="localImageBase64"></FileInput>
       </div>
+
 
       <div class="modal-actions">
         <button @click="closeModal" class="secondary-btn">Cancel</button>
@@ -23,10 +25,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, defineProps, defineEmits } from 'vue';
+import { ref, watch, defineProps, defineEmits, type Ref } from 'vue';
 import { type CollectionItem } from '@/stores/collection';
+import { useCollectionStore } from '@/stores/collection';
 import Checkbox from './Checkbox.vue';
+import FileInput from './FileInput.vue';
 
+const collectionStore = useCollectionStore();
 const props = defineProps<{
   isVisible: Boolean,
   item: CollectionItem,
@@ -35,15 +40,18 @@ const props = defineProps<{
 const emit = defineEmits(['close', 'save']);
 
 // Local data to edit card details before saving. Dont apply on cancel.
-const localName = ref(props.item.name);
-const localDescription = ref(props.item.description);
-const localCompleted = ref(props.item.completed);
+const localName: Ref<string> = ref(props.item.name);
+const localDescription: Ref<string | null> = ref(props.item.description);
+const localCompleted: Ref<boolean> = ref(props.item.completed);
+const localImageBase64: Ref<string | null> = ref(null); // Store the base64 string
+
 
 watch(() => props.isVisible, (newValue) => {
   if (newValue) {
     localName.value = props.item.name;
     localDescription.value = props.item.description;
     localCompleted.value = props.item.completed;
+    localImageBase64.value = props.item.imageBase64;
   }
 });
 
@@ -55,6 +63,8 @@ function saveChanges() {
   props.item.name = localName.value;
   props.item.description = localDescription.value;
   props.item.completed = localCompleted.value;
+  props.item.imageBase64 = localImageBase64.value;
+  collectionStore.saveCollection();
   emit('save');
 }
 </script>

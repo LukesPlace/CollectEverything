@@ -1,18 +1,20 @@
 <script setup lang="ts">
 import CollectionItems from '@/components/CollectionItems.vue';
-import { ref, onMounted, type Ref, computed } from 'vue'
+import { ref, type Ref, computed } from 'vue'
 import { useCollectionStore, type CollectionItem } from '@/stores/collection';
-import router from '@/router';
 import { storeToRefs } from 'pinia';
 import { vAutoAnimate } from '@formkit/auto-animate/vue';
+
+const props = defineProps<{
+id: string,
+}>();
 
 const collectionStore = useCollectionStore();
 collectionStore.loadCollection();
 
-const collectionId = router.currentRoute.value.params.id;
+const collectionName: string = props.id;
 const { collections } = storeToRefs(collectionStore)
-const currentCollectionItems = collections.value?.find(c => c.name == collectionId)?.items;
-// const filteredCollectionItems: Ref<Array<CollectionItem> | null> = ref(currentCollectionItems ?? null);
+const currentCollectionItems = collections.value?.find(c => c.name == collectionName)?.items;
 
 const filteredCollectionItems = computed(()=> {
   if (!filterValue.value)
@@ -28,7 +30,8 @@ function onNewCollectionItem() {
     id: crypto.randomUUID(),
     name: 'New collection item',
     description: null,
-    completed: false
+    completed: false,
+    imageBase64: null
   };
 
   currentCollectionItems?.push(newCollectionItem);
@@ -39,7 +42,7 @@ function onNewCollectionItem() {
 <template>
   <div class="collection">
     <div class="collection-header">
-      <h1>Your Collection</h1>
+      <h1 :title="collectionName">Your {{ collectionName }}</h1>
       <div class="search-filter">
         <input v-model="filterValue" type="text" placeholder="Search by name or description...">
       </div>
@@ -55,15 +58,35 @@ function onNewCollectionItem() {
     width: 100%;
     min-height: 100vh;
     align-items: center;
+    padding: 0 5%;
   }
 }
+  
 
 .collection-header {
   display: flex;
+  align-items: center;
   justify-content: space-between;
+  gap: 1rem; /* Adds space between elements */
   padding-bottom: 2rem;
 }
+
+.collection-header h1 {
+  flex: 1; /* Allows h1 to grow but not take up the whole row */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
 .search-filter {
-  width: 50%;
-} 
+  flex: 1;
+  max-width: 50%; /* Prevents search from growing too large */
+}
+
+.primary-btn {
+  flex-shrink: 0; /* Keeps the button from being resized */
+  white-space: nowrap;
+}
+
 </style>
