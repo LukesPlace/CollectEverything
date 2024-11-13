@@ -1,11 +1,18 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
+import router from './router';
 
+
+function onHomeButtonClick() {
+  router.push('/');
+}
 </script>
 
 <template>
   <header>
-    <img alt="CE logo" class="logo" src="@/assets/CELogo.png" width="55" height="75" />
+    <button @click="onHomeButtonClick">
+      <img alt="CE logo" class="logo" src="@/assets/CELogo.png" width="55" height="75"/>
+    </button>
     <h1>Collect Everything!</h1>
     <div class="wrapper">
       <nav>
@@ -20,6 +27,17 @@ import { RouterLink, RouterView } from 'vue-router'
 </template>
 
 <style scoped>
+button {
+  background-color: var(--color-background);
+  background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+}
+
 header {
   display: flex;
   z-index: 100;
