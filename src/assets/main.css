@@ -12,6 +12,24 @@
   font-weight: normal;
 }
 
+span {
+  color: white;
+}
+
+.default-text {
+  color: var(--color-text);
+}
+.emphasis-text {
+  color: var(--primary-green); /* Use primary green color for emphasis */
+  font-weight: bold;
+  font-size: 1.1em;
+  background-color: rgba(40, 167, 69, 0.1); /* Light green background for highlight */
+  padding: 0.5em;
+  border-radius: 4px;
+  display: inline-block; /* Ensures padding works nicely around text */
+  text-align: center;
+}
+
 a,
 .green {
   text-decoration: none;
@@ -76,7 +94,7 @@ button {
 
 .secondary-btn {
   color: #c0c0c0;
-  background-color: var(--color-background-soft);
+  background-color: var(--color-background-mute);
   padding: 0.75em 1.5em;
   font-size: 1rem;
   font-weight: 600;

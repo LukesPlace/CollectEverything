@@ -1,16 +1,16 @@
 <script setup lang="ts">
+import type { CollectionItem } from '@/stores/collection';
+import Card from './Card.vue';
 
 const props = defineProps<{
-  cards: Array<img>;
+  items: Array<CollectionItem>
 }>();
-
 </script>
 
 <template>
 <div class="card-list">
-  <!-- <img v-for="img in cards" :key="img" :src="img" alt="Dynamic Image" /> -->
-  <div v-for="card in props.cards">
-    <img :key="card" :src="card" alt="Dynamic Image"/>
+  <div v-for="item in props.items">
+    <card :collection-item="item"></card>
   </div>
 </div>
 </template>

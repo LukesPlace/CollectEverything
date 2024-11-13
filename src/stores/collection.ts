@@ -2,7 +2,7 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
 interface CollectionState {
-  collection: Array<Collection> | null;
+  collections: Array<Collection> | null;
 }
 
 export interface Collection {
@@ -11,23 +11,24 @@ export interface Collection {
   items: Array<CollectionItem>;  
 }
 
-interface CollectionItem {
+export interface CollectionItem {
   id: string;
   name: string;
+  description: string | null;
   completed: boolean;
 }
 export const useCollectionStore = defineStore('collection', {
   state: (): CollectionState => ({
-    collection: null,
+    collections: null,
     // ...
   }),
   actions: {
     loadCollection() { 
       // this.collection = localStorage.getItem('collection');
-      this.collection = JSON.parse(localStorage.getItem('collection') ?? '');
+      this.collections = JSON.parse(localStorage.getItem('collection') ?? '');
     },
     saveCollection() {
-      localStorage.collection = JSON.stringify(this.collection);
+      localStorage.collection = JSON.stringify(this.collections);
     },
   },
 })

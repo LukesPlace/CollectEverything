@@ -2,29 +2,34 @@
 import { ref, type Ref } from 'vue';
 import { useCollectionStore, type Collection } from '@/stores/collection';
 import ConfirmationDialog from '@/components/ConfirmationDialog.vue';
+import { storeToRefs } from 'pinia';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import router from '@/router';
 
 const showEditDialog: Ref<boolean> = ref(false);
+const showDeleteDialog: Ref<boolean> = ref(false);
 const editingCollection: Ref<Collection | null> = ref(null);
 const editingCollectionName: Ref<string | null> = ref(null);
 const collectionStore = useCollectionStore();
 collectionStore.loadCollection();
-const collections: Array<Collection> | null  = collectionStore.collection ?? null;
+const { collections } = storeToRefs(collectionStore)
 console.log(collections);
 
 function onEditCollection(collectionId: string) {
-  editingCollection.value = collections?.find(c => c.id == collectionId) ?? null;
+  editingCollection.value = collections.value?.find(c => c.id == collectionId) ?? null;
   editingCollectionName.value = editingCollection.value!.name;
   showEditDialog.value = true;
 }
 
 function onDeleteCollection(collectionId: string) {
-  editingCollection.value = collections?.find(c => c.id == collectionId) ?? null;
+  editingCollection.value = collections.value?.find(c => c.id == collectionId) ?? null;
   editingCollectionName.value = editingCollection.value!.name;
-  showEditDialog.value = true;
+  showDeleteDialog.value = true;
 }
 
 function onDialogClose() {
   showEditDialog.value = false;
+  showDeleteDialog.value = false;
 }
 
 function onDialogSave() {
@@ -34,10 +39,24 @@ function onDialogSave() {
 }
 
 function onDialogDelete() {
-  const collectionToDelete = collections?.find(c => c.id == editingCollection.value?.id) ?? null;
-  collectionStore.collection = collections?.filter(c => c.id !== collectionToDelete?.id)!;
-  showEditDialog.value = false;
+  const collectionToDelete = collections?.value?.find(c => c.id == editingCollection.value?.id) ?? null;
+  collectionStore.collections = collections?.value?.filter(c => c.id !== collectionToDelete?.id)!;
+  showDeleteDialog.value = false;
   collectionStore.saveCollection();
+}
+
+function onAddNewCollection() {
+  const newCollection: Collection = { 
+    id: crypto.randomUUID(),
+    name: 'New Collection',
+    items: []
+  }
+  collections.value?.push(newCollection);
+  collectionStore.saveCollection();
+}
+
+function onRowClick(url: string) {
+  router.push(url);
 }
 </script>
 
@@ -48,42 +67,47 @@ function onDialogDelete() {
       <table>
         <thead>
           <tr>
-            <th>Collection Name</th>
-            <th>Actions</th>
+            <th class="collection-name-header">Collection Name</th>
+            <th class="actions-header">Actions</th>
           </tr>
         </thead>
-        <tr v-for="collection in collections">
-          <td> {{ collection.name }}</td>
-          <td class="actions">
-            <button @click="onEditCollection(collection.id)" class="primary-btn">Edit</button>
-            <button @click="onDeleteCollection(collection.id)" class="delete-btn">Delete</button>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2" class="add-new">
-            <button class="primary-btn">Add new</button>
-          </td>
-        </tr>
+        <tbody>
+          <tr v-for="collection in collections" :key="collection.id" class="clickable-row">
+            <td @click="onRowClick(`/collection/${collection.name}`)">{{ collection.name }}</td>
+            <td class="actions">
+              <button @click="onEditCollection(collection.id)" class="primary-btn"><font-awesome-icon :icon="['fas', 'pen']" /></button>
+              <!-- <button @click="onDeleteCollection(collection.id)" class="delete-btn">Delete</button> -->
+              <button @click="onDeleteCollection(collection.id)" class="delete-btn delete-icon"><font-awesome-icon :icon="['fas', 'trash']" /></button>
+            </td>
+          </tr>
+          <tr key="newRow">
+            <td colspan="2" class="add-new">
+              <button @click="onAddNewCollection" class="primary-btn">Add new</button>
+            </td>
+          </tr>
+        </tbody>
       </table>
     </div>
   </div>
   <confirmation-dialog title="Edit collection" :show="showEditDialog" @close="onDialogClose" @save="onDialogSave">
     <div>
-      <span>Collection Name</span>
+      <span class="default-text">Collection Name</span>
       <input type="text" v-model="editingCollectionName">
     </div>
   </confirmation-dialog>
-  <confirmation-dialog title="Delete collection?" :show="showEditDialog" :is-delete-dialog="true" @close="onDialogClose" @delete="onDialogDelete">
+  <confirmation-dialog title="Delete collection?" :show="showDeleteDialog" :is-delete-dialog="true" @close="onDialogClose" @delete="onDialogDelete">
     <div>
-      <span>Really delete this collection {{ editingCollectionName }}</span>
+      <span class="default-text">Really delete this collection <strong class="emphasis-text">{{ editingCollectionName }}</strong>?</span>
     </div>
   </confirmation-dialog>
 </template>
 
 <style>
+
 .header {
   padding-bottom: 2rem;
 }
+
 @media (min-width: 1024px) {
   .collections {
     width: 100%;
@@ -93,7 +117,17 @@ function onDialogDelete() {
   }
 }
 
+.collection-name-header {
+  width: 70%;
+}
+
+
+.actions-header {
+  text-align: center;
+}
 .actions {
+  align-items: center;
+  justify-content: center;
   display: flex;
   gap: 1rem;
 }
@@ -107,6 +141,9 @@ function onDialogDelete() {
   font-size: 1.2em;
   cursor: pointer;
   color:white;
+}
 
+.clickable-row:hover {
+  cursor: pointer;
 }
 </style>

@@ -1,33 +1,51 @@
 <script setup lang="ts">
 import CollectionItems from '@/components/CollectionItems.vue';
-import { ref, onMounted } from 'vue'
-import { useCollectionStore } from '@/stores/collection';
+import { ref, onMounted, type Ref, computed } from 'vue'
+import { useCollectionStore, type CollectionItem } from '@/stores/collection';
+import router from '@/router';
+import { storeToRefs } from 'pinia';
+import { vAutoAnimate } from '@formkit/auto-animate/vue';
 
 const collectionStore = useCollectionStore();
 collectionStore.loadCollection();
-// Dynamically import all images in a folder
-const cards = import.meta.glob('@/assets/OpCards/*.png')
 
-// Store image URLs
-const imageUrls = ref<string[]>([])
+const collectionId = router.currentRoute.value.params.id;
+const { collections } = storeToRefs(collectionStore)
+const currentCollectionItems = collections.value?.find(c => c.name == collectionId)?.items;
+// const filteredCollectionItems: Ref<Array<CollectionItem> | null> = ref(currentCollectionItems ?? null);
 
-// Load all images on mount
-onMounted(async () => {
-  const imports = Object.values(cards)
-  const resolvedImages = await Promise.all(imports.map(img => img()))
-  imageUrls.value = resolvedImages.map(module => module.default)
+const filteredCollectionItems = computed(()=> {
+  if (!filterValue.value)
+    return currentCollectionItems;
+
+  return currentCollectionItems?.filter(c => c.name.toLowerCase().includes(filterValue.value!.toLowerCase()) || c.description?.toLowerCase().includes(filterValue.value!.toLowerCase()));
+  
 })
+const filterValue: Ref<string | null> = ref(null);
 
-function onSaveCollection() {
+function onNewCollectionItem() {
+  const newCollectionItem: CollectionItem = { 
+    id: crypto.randomUUID(),
+    name: 'New collection item',
+    description: null,
+    completed: false
+  };
+
+  currentCollectionItems?.push(newCollectionItem);
   collectionStore.saveCollection();
 }
 </script>
 
 <template>
   <div class="collection">
-    <h1>Your Collection</h1>
-    <button @click="onSaveCollection" class="primary-btn">Save Collection</button>
-    <collection-items :cards="imageUrls"></collection-items>
+    <div class="collection-header">
+      <h1>Your Collection</h1>
+      <div class="search-filter">
+        <input v-model="filterValue" type="text" placeholder="Search by name or description...">
+      </div>
+      <button @click="onNewCollectionItem" class="primary-btn">Create new Item</button>
+    </div>
+    <collection-items :items="filteredCollectionItems ?? []" v-auto-animate></collection-items>
   </div>
 </template>
 
@@ -39,4 +57,13 @@ function onSaveCollection() {
     align-items: center;
   }
 }
+
+.collection-header {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 2rem;
+}
+.search-filter {
+  width: 50%;
+} 
 </style>

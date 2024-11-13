@@ -2,14 +2,14 @@
   <div v-if="isVisible" class="dialog-overlay">
     <div class="dialog-content">
       <header class="dialog-header">
-        <h2>{{ title }}</h2>
+        <h2 class="default-text">{{ title }}</h2>
         <button @click="onClose" class="dialog-close-btn">X</button>
       </header>
       <div class="dialog-body">
         <slot />
       </div>
       <footer class="dialog-footer">
-        <button @click="onClose" class="secondary-btn">Close</button>
+        <button @click="onClose" class="secondary-btn">Cancel</button>
         <button v-if="!isDeleteDialog"  @click="onSave" class="primary-btn">Save</button>
         <button v-else  @click="onDelete" class="delete-btn">Delete</button>
       </footer>
@@ -26,15 +26,12 @@ const props = defineProps<{
   isDeleteDialog?: boolean
 }>();
 
-// Internal state to manage dialog visibility
 const isVisible = ref(props.show);
 
-// Watch for changes in modelValue to control visibility externally
 watch(() => props.show, (newVal) => {
   isVisible.value = newVal;
 });
 
-// Emit close event
 const emit = defineEmits(['close', 'save', 'delete'])
 function onClose() {
   isVisible.value = false;
@@ -55,7 +52,7 @@ function onDelete() {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -63,7 +60,7 @@ function onDelete() {
 }
 
 .dialog-content {
-  background-color: var(--color-background-soft);
+  background-color: var(--color-background-mute);
   width: 90%;
   max-width: 500px;
   padding: 1em;
