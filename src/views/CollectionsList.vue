@@ -14,7 +14,6 @@ const editingCollectionName: Ref<string | null> = ref(null);
 const collectionStore = useCollectionStore();
 collectionStore.loadCollection();
 const { collections } = storeToRefs(collectionStore)
-console.log(collections);
 
 function onEditCollection(collectionId: string) {
   editingCollection.value = collections.value?.find(c => c.id == collectionId) ?? null;

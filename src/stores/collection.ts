@@ -26,7 +26,7 @@ export const useCollectionStore = defineStore('collection', {
   actions: {
     loadCollection() { 
       // this.collection = localStorage.getItem('collection');
-      this.collections = JSON.parse(localStorage.getItem('collection') ?? '');
+      this.collections = JSON.parse(localStorage.getItem('collection') ?? '[]');
     },
     saveCollection() {
       localStorage.collection = JSON.stringify(this.collections);

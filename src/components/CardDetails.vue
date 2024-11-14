@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isVisible" class="modal-overlay" @click.self="closeModal">
+  <div v-if="isVisible" class="modal-overlay">
     <div class="modal-content">
       <h2>Edit Item Details</h2>
       <div class="modal-body">
