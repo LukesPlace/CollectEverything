@@ -6,7 +6,7 @@
   </label>
 </template>
 
-<script setup>
+<script setup lang="ts">
 const isChecked = defineModel();
 </script>
 
