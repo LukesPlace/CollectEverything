@@ -5,6 +5,7 @@ import ConfirmationDialog from '@/components/ConfirmationDialog.vue';
 import { storeToRefs } from 'pinia';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import router from '@/router';
+import ProgressBar from '@/components/ProgressBar.vue';
 
 const showEditDialog: Ref<boolean> = ref(false);
 const showDeleteDialog: Ref<boolean> = ref(false);
@@ -68,12 +69,14 @@ function onRowClick(url: string) {
         <thead>
           <tr>
             <th class="collection-name-header">Collection Name</th>
+            <th class="progress-bar-header"></th>
             <th class="actions-header">Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="collection in collections" :key="collection.id" class="clickable-row">
-            <td @click="onRowClick(`/collection/${collection.name}`)">{{ collection.name }}</td>
+            <td class="collection-name" @click="onRowClick(`/collection/${collection.name}`)">{{ collection.name }}</td>
+            <td><progress-bar :completed-items="collection.items?.filter(c => c.completed == true).length ?? 0" :total-items="collection.items?.length ?? 0"> </progress-bar></td>
             <td class="actions">
               <button @click="onEditCollection(collection.id)" class="primary-btn"><font-awesome-icon :icon="['fas', 'pen']" /></button>
               <!-- <button @click="onDeleteCollection(collection.id)" class="delete-btn">Delete</button> -->
@@ -81,7 +84,7 @@ function onRowClick(url: string) {
             </td>
           </tr>
           <tr key="newRow">
-            <td colspan="2" class="add-new">
+            <td colspan="3" class="add-new">
               <button @click="onAddNewCollection" class="primary-btn">Add new</button>
             </td>
           </tr>
@@ -108,23 +111,28 @@ function onRowClick(url: string) {
   padding-bottom: 2rem;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 767px) {
   .collections {
     width: 100%;
     min-height: 100vh;
     align-items: center;
     padding-left: 5%;
   }
+
+
+.collection-name {
+  font-weight: bold;
 }
 
-.collection-name-header {
-  width: 70%;
+.progress-bar-header {
+  min-width: 8rem;
 }
 
 
 .actions-header {
   text-align: center;
 }
+
 .actions {
   align-items: center;
   justify-content: center;
@@ -145,5 +153,70 @@ function onRowClick(url: string) {
 
 .clickable-row:hover {
   cursor: pointer;
+}
+}
+
+/* Mobile styles */
+@media (max-width: 767px) {
+  /* Stack table rows as individual cards */
+  thead {
+    display: none; /* Hide table headers */
+  }
+  table {
+    background-color: var(--color-background);
+  }
+
+  .table-container table {
+    display: block;
+    border: 0;
+  }
+
+  .clickable-row {
+    display: block;
+    background-color: var(--color-background-mute);
+    border: 1px solid var(--primary-green);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    padding: 1rem;
+  }
+
+  .clickable-row td {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0;
+  }
+
+  .collection-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+
+  .progress-bar-header,
+  .actions-header {
+    display: none; /* Hide headers */
+  }
+
+  /* Progress bar styling */
+  .clickable-row td:nth-child(2) {
+    margin-top: 0.5rem;
+  }
+
+  /* Actions styling on new line */
+  .actions {
+    margin-top: 0.5rem;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  /* Add new row on mobile */
+  .add-new {
+    text-align: center;
+    padding: 1rem 0;
+  }
+
+  .primary-btn, .delete-btn {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+  }
 }
 </style>

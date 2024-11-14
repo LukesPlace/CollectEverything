@@ -4,9 +4,10 @@ import { ref, type Ref, computed } from 'vue'
 import { useCollectionStore, type CollectionItem } from '@/stores/collection';
 import { storeToRefs } from 'pinia';
 import { vAutoAnimate } from '@formkit/auto-animate/vue';
+import ProgressBar from '@/components/ProgressBar.vue';
 
 const props = defineProps<{
-id: string,
+  id: string,
 }>();
 
 const collectionStore = useCollectionStore();
@@ -22,7 +23,8 @@ const filteredCollectionItems = computed(()=> {
 
   return currentCollectionItems?.filter(c => c.name.toLowerCase().includes(filterValue.value!.toLowerCase()) || c.description?.toLowerCase().includes(filterValue.value!.toLowerCase()));
   
-})
+});
+
 const filterValue: Ref<string | null> = ref(null);
 
 function onNewCollectionItem() {
@@ -48,6 +50,7 @@ function onNewCollectionItem() {
       </div>
       <button @click="onNewCollectionItem" class="primary-btn">Create new Item</button>
     </div>
+    <progress-bar :completed-items="filteredCollectionItems?.filter(c => c.completed == true).length ?? 0" :total-items="filteredCollectionItems?.length ?? 0"> </progress-bar>
     <collection-items :items="filteredCollectionItems ?? []" v-auto-animate></collection-items>
   </div>
 </template>

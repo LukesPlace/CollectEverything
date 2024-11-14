@@ -29,7 +29,7 @@ function onDialogSave() {
   <div @click="onShowCardDetails" :class="['card', { 'card-incomplete': !collectionItem.completed }]">
     <img :src="collectionItem.imageBase64 ?? 'https://via.placeholder.com/300x200'" alt="Card image" class="card-image" />
     <font-awesome-icon v-if="!collectionItem.completed" :icon="['fas', 'lock']" class="lock-icon" />
-    <div class="card-content">
+    <div class="card-content" :title="props.collectionItem.name ?? 'New item'">
       <h3 class="card-title">{{ props.collectionItem.name ?? 'New item'}}</h3>
       <p class="card-description">{{ props.collectionItem.description }}</p>
     </div>
@@ -39,9 +39,43 @@ function onDialogSave() {
 </template>
 
 <style scoped>
+@media (min-width: 1024px) {
+  .card {
+    height: 20rem;
+    font-size: 1.25rem;
+  }
+  .card-title {
+    font-size: 1.25rem;
+    max-height: 100%;
+  }
+  .card-description {
+    /* adding elipsis to multi line. Cant use text-overflow elipsis due to whitespace no wrap */
+    line-height: 1.4;
+    max-height: 4.2em; 
+    overflow: hidden;
+    display: -webkit-box;
+    line-clamp: 3;
+    -webkit-line-clamp: 3; 
+    -webkit-box-orient: vertical;
+  }
+}
+
+@media (max-width: 1024px) {
+  .card {
+    height: 10rem;
+  }
+
+  .card-title {
+    font-size: 0.8rem;
+    max-height: 100%;
+  }
+
+  .card-description {
+    display: none;
+  }
+}
 .card {
   cursor: pointer;
-  height: 20rem;
   width: 300px;
   background-color: var(--card-bg, #1e1e1e);
   color: var(--text-color, #ffffff);
@@ -70,13 +104,16 @@ function onDialogSave() {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  height: 100%;
 }
 
 .card-title {
-  font-size: 1.25rem;
   font-weight: bold;
   margin: 0;
-  color: var(--primary-green, #32cd32); 
+  color: var(--primary-green, #32cd32);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .card-description {

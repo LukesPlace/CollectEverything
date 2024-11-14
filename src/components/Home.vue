@@ -11,15 +11,15 @@ import EcosystemIcon from './icons/IconEcosystem.vue'
       <DocumentationIcon />
     </template>
     <template #heading><RouterLink to="/collections">Collections</RouterLink></template>
-      Get an extensive in depth look at your current collection.
+      Manage your current collections.
   </HomeItem>
 
   <HomeItem>
     <template #icon>
       <ToolingIcon />
     </template>
-    <template #heading>Card List</template>
-      A complete card list of all the current cards in all the current sets.
+    <template #heading>Analytics</template>
+      Coming soon..
   </HomeItem>
 
   <HomeItem>
@@ -27,6 +27,6 @@ import EcosystemIcon from './icons/IconEcosystem.vue'
       <EcosystemIcon />
     </template>
     <template #heading>Ecosystem</template>
-      Deck builder
+      Coming soon..
   </HomeItem>
 </template>
