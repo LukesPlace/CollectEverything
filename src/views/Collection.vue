@@ -5,6 +5,7 @@ import { useCollectionStore, type CollectionItem } from '@/stores/collection';
 import { storeToRefs } from 'pinia';
 import { vAutoAnimate } from '@formkit/auto-animate/vue';
 import ProgressBar from '@/components/ProgressBar.vue';
+import ToggleButton from '@/components/ToggleButton.vue';
 
 const props = defineProps<{
   id: string,
@@ -18,14 +19,19 @@ const { collections } = storeToRefs(collectionStore)
 const currentCollectionItems = collections.value?.find(c => c.name == collectionName)?.items;
 
 const filteredCollectionItems = computed(()=> {
-  if (!filterValue.value)
-    return currentCollectionItems;
+  let currentFilteredItems = currentCollectionItems;
 
-  return currentCollectionItems?.filter(c => c.name.toLowerCase().includes(filterValue.value!.toLowerCase()) || c.description?.toLowerCase().includes(filterValue.value!.toLowerCase()));
-  
+  if (!showAll.value)
+    currentFilteredItems = currentFilteredItems?.filter(f => f.completed === true);
+
+  if (!filterValue.value)
+    return currentFilteredItems;
+
+  return currentFilteredItems?.filter(c => c.name.toLowerCase().includes(filterValue.value!.toLowerCase()) || c.description?.toLowerCase().includes(filterValue.value!.toLowerCase()));
 });
 
 const filterValue: Ref<string | null> = ref(null);
+const showAll: Ref<boolean> = ref(true);
 
 function onNewCollectionItem() {
   const newCollectionItem: CollectionItem = { 
@@ -44,7 +50,8 @@ function onNewCollectionItem() {
 <template>
   <div class="collection">
     <div class="collection-header">
-      <h1 :title="collectionName">Your {{ collectionName }}</h1>
+      <h1 class="collection-title" :title="collectionName">Your {{ collectionName }}</h1>
+      <toggle-button v-model="showAll">Show missing?</toggle-button>
       <div class="search-filter">
         <input v-model="filterValue" type="text" placeholder="Search by name or description...">
       </div>
@@ -56,21 +63,45 @@ function onNewCollectionItem() {
 </template>
 
 <style>
+
 @media (min-width: 1024px) {
-  .collection {
+  .collection-header {
+    flex-direction: row;
+  }
+
+  .search-filter {
+    flex: 1;
+    max-width: 50%; /* Prevents search from growing too large */
+  }
+
+}
+@media (max-width: 1024px) {
+  .collection-header {
+   flex-direction: column; 
+  }
+
+  .search-filter {
+    flex: 1;
     width: 100%;
-    min-height: 100vh;
-    align-items: center;
-    padding: 0 5%;
   }
 }
-  
+
+.collection {
+  width: 100%;
+  min-height: 100vh;
+  align-items: center;
+  padding: 0 5%;
+}
+
+.collection-title {
+  width: 100%;
+}
 
 .collection-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem; /* Adds space between elements */
+  gap: 1rem;
   padding-bottom: 2rem;
 }
 
@@ -80,11 +111,6 @@ function onNewCollectionItem() {
   overflow: hidden;
   text-overflow: ellipsis;
   margin: 0;
-}
-
-.search-filter {
-  flex: 1;
-  max-width: 50%; /* Prevents search from growing too large */
 }
 
 .primary-btn {

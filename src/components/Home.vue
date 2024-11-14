@@ -3,6 +3,7 @@ import HomeItem from './HomeItem.vue'
 import DocumentationIcon from './icons/IconDocumentation.vue'
 import ToolingIcon from './icons/IconTooling.vue'
 import EcosystemIcon from './icons/IconEcosystem.vue'
+import SupportIcon from './icons/IconSupport.vue'
 </script>
 
 <template>
@@ -27,6 +28,14 @@ import EcosystemIcon from './icons/IconEcosystem.vue'
       <EcosystemIcon />
     </template>
     <template #heading>Ecosystem</template>
+      Coming soon..
+  </HomeItem>
+
+  <HomeItem>
+    <template #icon>
+      <SupportIcon />
+    </template>
+    <template #heading>Settings</template>
       Coming soon..
   </HomeItem>
 </template>

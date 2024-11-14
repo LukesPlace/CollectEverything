@@ -47,6 +47,10 @@ function onDialogSave() {
   .card-title {
     font-size: 1.25rem;
     max-height: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
   }
   .card-description {
     /* adding elipsis to multi line. Cant use text-overflow elipsis due to whitespace no wrap */
@@ -68,6 +72,14 @@ function onDialogSave() {
   .card-title {
     font-size: 0.8rem;
     max-height: 100%;
+    /* adding elipsis to multi line. Cant use text-overflow elipsis due to whitespace no wrap */
+    line-height: 1.4;
+    max-height: 4.2em; 
+    overflow: hidden;
+    display: -webkit-box;
+    line-clamp: 3;
+    -webkit-line-clamp: 3; 
+    -webkit-box-orient: vertical;
   }
 
   .card-description {
@@ -111,9 +123,6 @@ function onDialogSave() {
   font-weight: bold;
   margin: 0;
   color: var(--primary-green, #32cd32);
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
 }
 
 .card-description {

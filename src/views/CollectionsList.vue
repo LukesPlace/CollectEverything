@@ -64,6 +64,7 @@ function onRowClick(url: string) {
 <template>
   <div class="collections">
     <h1 class="header">All Collections</h1>
+    <button @click="onAddNewCollection" class="mobile primary-btn">Add new</button>
     <div class="table-container">
       <table>
         <thead>
@@ -108,10 +109,16 @@ function onRowClick(url: string) {
 <style>
 
 .header {
+  padding: 0 5%;
   padding-bottom: 2rem;
 }
 
 @media (min-width: 767px) {
+
+  .mobile {
+    display: none;
+  }
+
   .collections {
     width: 100%;
     min-height: 100vh;
@@ -164,6 +171,17 @@ function onRowClick(url: string) {
   }
   table {
     background-color: var(--color-background);
+  }
+
+  .collections {
+    text-align: center;
+  }
+
+  .mobile {
+    margin-bottom: 2rem;
+  }
+  .add-new {
+    display: none;
   }
 
   .table-container table {
