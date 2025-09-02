@@ -31,6 +31,27 @@ function onDialogSave() {
     <font-awesome-icon v-if="!collectionItem.completed" :icon="['fas', 'lock']" class="lock-icon" />
     <div class="card-content" :title="props.collectionItem.name ?? 'New item'">
       <h3 class="card-title">{{ props.collectionItem.name ?? 'New item'}}</h3>
+      <div v-if="props.collectionItem.tags"> 
+        <ul class="tags-list">
+          <!-- Show first 2 tags -->
+          <li
+            v-for="(tag, index) in props.collectionItem.tags.slice(0, 2)"
+            :key="index"
+            class="tag"
+          >
+            <p>{{ tag }}</p>
+          </li>
+
+          <!-- If more than 2, show an ellipsis with tooltip -->
+          <li
+            v-if="props.collectionItem.tags.length > 2"
+            class="tag tag-more"
+            :title="props.collectionItem.tags.slice(2).join(', ')"
+          >
+            …
+          </li>
+        </ul>
+      </div>
       <p class="card-description">{{ props.collectionItem.description }}</p>
     </div>
   </div>
@@ -176,5 +197,29 @@ function onDialogSave() {
   font-size: 2rem;
   color: rgba(0, 0, 0, 0.8);
   pointer-events: none; /* Prevents interaction with the icon */
+}
+
+
+.tags-list {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tag {
+  background-color: var(--primary-green);
+  color: white;
+  padding: 0.3rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.tag-more {
+  background-color: #555;
+  cursor: help; /* Show a "hint" cursor */
 }
 </style>

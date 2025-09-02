@@ -27,7 +27,7 @@ const filteredCollectionItems = computed(()=> {
   if (!filterValue.value)
     return currentFilteredItems;
 
-  return currentFilteredItems?.filter(c => c.name.toLowerCase().includes(filterValue.value!.toLowerCase()) || c.description?.toLowerCase().includes(filterValue.value!.toLowerCase()));
+  return currentFilteredItems?.filter(c => c.name.toLowerCase().includes(filterValue.value!.toLowerCase()) || c.description?.toLowerCase().includes(filterValue.value!.toLowerCase()) || c.tags?.includes(filterValue.value!));
 });
 
 const filterValue: Ref<string | null> = ref(null);
@@ -39,7 +39,8 @@ function onNewCollectionItem() {
     name: 'New collection item',
     description: null,
     completed: false,
-    imageBase64: null
+    imageBase64: null,
+    tags: []
   };
 
   currentCollectionItems?.push(newCollectionItem);

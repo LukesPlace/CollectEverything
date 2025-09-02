@@ -15,6 +15,7 @@ export interface CollectionItem {
   id: string;
   name: string;
   description: string | null;
+  tags: Array<string>;
   completed: boolean;
   imageBase64: string | null;
 }
