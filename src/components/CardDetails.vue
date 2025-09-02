@@ -10,6 +10,8 @@
         <textarea v-model="localDescription" id="description"></textarea>
 
         <Tag v-model="localTags"></Tag>
+        <label for="category">Category</label>
+        <input type="text" v-model="localCategory" id="category"></input>
         <label>
           <checkbox v-model="localCompleted"></checkbox>
         </label>
@@ -26,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, defineProps, defineEmits, type Ref } from 'vue';
+import { ref, watch, defineEmits, type Ref } from 'vue';
 import { type CollectionItem } from '@/stores/collection';
 import { useCollectionStore } from '@/stores/collection';
 import Checkbox from './Checkbox.vue';
@@ -47,6 +49,7 @@ const localDescription: Ref<string | null> = ref(props.item.description);
 const localCompleted: Ref<boolean> = ref(props.item.completed);
 const localImageBase64: Ref<string | null> = ref(null); // Store the base64 string
 const localTags: Ref<Array<string>> = ref(props.item.tags ?? []);
+const localCategory: Ref<string | null> = ref(null);
 
 
 watch(() => props.isVisible, (newValue) => {
@@ -56,6 +59,7 @@ watch(() => props.isVisible, (newValue) => {
     localCompleted.value = props.item.completed;
     localImageBase64.value = props.item.imageBase64;
     localTags.value = props.item.tags ?? [];
+    localCategory.value = props.item.category ?? null;
   }
 });
 
@@ -69,6 +73,7 @@ function saveChanges() {
   props.item.completed = localCompleted.value;
   props.item.imageBase64 = localImageBase64.value;
   props.item.tags = localTags.value;
+  props.item.category = localCategory.value;
   collectionStore.saveCollection();
   emit('save');
 }

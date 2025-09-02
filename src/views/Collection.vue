@@ -40,7 +40,8 @@ function onNewCollectionItem() {
     description: null,
     completed: false,
     imageBase64: null,
-    tags: []
+    tags: [],
+    category: null,
   };
 
   currentCollectionItems?.push(newCollectionItem);
