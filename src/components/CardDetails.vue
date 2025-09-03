@@ -3,6 +3,7 @@
     <div class="modal-content">
       <h2>Edit Item Details</h2>
       <div class="modal-body">
+        <ToggleButton v-model="localCompleted" unchecked-state="Add to collection?" checked-state="Remove from collection?"></ToggleButton>
         <label for="name">Name:</label>
         <input type="text" v-model="localName" id="name" />
 
@@ -12,9 +13,6 @@
         <Tag v-model="localTags"></Tag>
         <label for="category">Category</label>
         <input type="text" v-model="localCategory" id="category"></input>
-        <label>
-          <checkbox v-model="localCompleted"></checkbox>
-        </label>
         <FileInput v-model="localImageBase64"></FileInput>
       </div>
 
@@ -34,6 +32,7 @@ import { useCollectionStore } from '@/stores/collection';
 import Checkbox from './Checkbox.vue';
 import FileInput from './FileInput.vue';
 import Tag from './Tag.vue';
+import ToggleButton from './ToggleButton.vue';
 
 const collectionStore = useCollectionStore();
 const props = defineProps<{

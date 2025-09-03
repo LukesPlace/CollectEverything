@@ -53,7 +53,7 @@ function onNewCollectionItem() {
   <div class="collection">
     <div class="collection-header">
       <h1 class="collection-title" :title="collectionName">Your {{ collectionName }}</h1>
-      <toggle-button v-model="showAll">Show missing?</toggle-button>
+      <toggle-button v-model="showAll" unchecked-state="Show missing?" checked-state="Hide missing?">Show missing?</toggle-button>
       <div class="search-filter">
         <input v-model="filterValue" type="text" placeholder="Search by name or description...">
       </div>

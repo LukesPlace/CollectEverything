@@ -1,10 +1,14 @@
 <template>
-  <button :class="['toggle-btn', { 'checked': !checked }]" @click="toggleChecked">{{ checked ? 'Hide missing' : 'Show missing' }}</button>
+  <button :class="['toggle-btn', { 'checked': !checked }]" @click="toggleChecked">{{ checked ? props.checkedState : props.uncheckedState }}</button>
 </template>
 
 <script setup lang="ts">
-
 const checked = defineModel();
+
+const props = defineProps<{
+  checkedState: string,
+  uncheckedState: string
+}>();
 
 function toggleChecked() {
   checked.value = !checked.value;
@@ -31,10 +35,6 @@ function toggleChecked() {
 
 .toggle-btn:active {
   transform: scale(0.98); /* Slight shrink on click */
-}
-
-.checked {
-  background-color: var(--primary-green-darken);
 }
 
 </style>
