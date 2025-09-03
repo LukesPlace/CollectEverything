@@ -1,52 +1,52 @@
 <script setup lang="ts">
-import CollectionItems from '@/components/CollectionItems.vue';
-import { ref, type Ref, computed } from 'vue'
-import { useCollectionStore, type CollectionItem } from '@/stores/collection';
-import { storeToRefs } from 'pinia';
-import { vAutoAnimate } from '@formkit/auto-animate/vue';
-import ProgressBar from '@/components/ProgressBar.vue';
-import ToggleButton from '@/components/ToggleButton.vue';
+  import CollectionItems from '@/components/CollectionItems.vue';
+  import { ref, type Ref, computed } from 'vue'
+  import { useCollectionStore, type CollectionItem } from '@/stores/collection';
+  import { storeToRefs } from 'pinia';
+  import { vAutoAnimate } from '@formkit/auto-animate/vue';
+  import ProgressBar from '@/components/ProgressBar.vue';
+  import ToggleButton from '@/components/ToggleButton.vue';
 
-const props = defineProps<{
-  id: string,
-}>();
+  const props = defineProps<{
+    id: string,
+  }>();
 
-const collectionStore = useCollectionStore();
-collectionStore.loadCollection();
+  const collectionStore = useCollectionStore();
+  collectionStore.loadCollection();
 
-const collectionName: string = props.id;
-const { collections } = storeToRefs(collectionStore)
-const currentCollectionItems = collections.value?.find(c => c.name == collectionName)?.items;
+  const collectionName: string = props.id;
+  const { collections } = storeToRefs(collectionStore)
+  const currentCollectionItems = collections.value?.find(c => c.name == collectionName)?.items;
 
-const filteredCollectionItems = computed(()=> {
-  let currentFilteredItems = currentCollectionItems;
+  const filteredCollectionItems = computed(()=> {
+    let currentFilteredItems = currentCollectionItems;
 
-  if (!showAll.value)
-    currentFilteredItems = currentFilteredItems?.filter(f => f.completed === true);
+    if (!showAll.value)
+      currentFilteredItems = currentFilteredItems?.filter(f => f.completed === true);
 
-  if (!filterValue.value)
-    return currentFilteredItems;
+    if (!filterValue.value)
+      return currentFilteredItems;
 
-  return currentFilteredItems?.filter(c => c.name.toLowerCase().includes(filterValue.value!.toLowerCase()) || c.description?.toLowerCase().includes(filterValue.value!.toLowerCase()) || c.tags?.includes(filterValue.value!));
-});
+    return currentFilteredItems?.filter(c => c.name.toLowerCase().includes(filterValue.value!.toLowerCase()) || c.description?.toLowerCase().includes(filterValue.value!.toLowerCase()) || c.tags?.includes(filterValue.value!));
+  });
 
-const filterValue: Ref<string | null> = ref(null);
-const showAll: Ref<boolean> = ref(true);
+  const filterValue: Ref<string | null> = ref(null);
+  const showAll: Ref<boolean> = ref(true);
 
-function onNewCollectionItem() {
-  const newCollectionItem: CollectionItem = { 
-    id: crypto.randomUUID(),
-    name: 'New collection item',
-    description: null,
-    completed: false,
-    imageBase64: null,
-    tags: [],
-    category: null,
-  };
+  function onNewCollectionItem() {
+    const newCollectionItem: CollectionItem = { 
+      id: crypto.randomUUID(),
+      name: 'New collection item',
+      description: null,
+      completed: false,
+      imageBase64: null,
+      tags: [],
+      category: null,
+    };
 
-  currentCollectionItems?.push(newCollectionItem);
-  collectionStore.saveCollection();
-}
+    currentCollectionItems?.push(newCollectionItem);
+    collectionStore.saveCollection();
+  }
 </script>
 
 <template>

@@ -1,63 +1,63 @@
 <script setup lang="ts">
-import { ref, type Ref } from 'vue';
-import { useCollectionStore, type Collection } from '@/stores/collection';
-import ConfirmationDialog from '@/components/ConfirmationDialog.vue';
-import { storeToRefs } from 'pinia';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import router from '@/router';
-import ProgressBar from '@/components/ProgressBar.vue';
+  import { ref, type Ref } from 'vue';
+  import { useCollectionStore, type Collection } from '@/stores/collection';
+  import ConfirmationDialog from '@/components/ConfirmationDialog.vue';
+  import { storeToRefs } from 'pinia';
+  import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+  import router from '@/router';
+  import ProgressBar from '@/components/ProgressBar.vue';
 
-const showEditDialog: Ref<boolean> = ref(false);
-const showDeleteDialog: Ref<boolean> = ref(false);
-const editingCollection: Ref<Collection | null> = ref(null);
-const editingCollectionName: Ref<string | null> = ref(null);
-const collectionStore = useCollectionStore();
-collectionStore.loadCollection();
-const { collections } = storeToRefs(collectionStore)
+  const showEditDialog: Ref<boolean> = ref(false);
+  const showDeleteDialog: Ref<boolean> = ref(false);
+  const editingCollection: Ref<Collection | null> = ref(null);
+  const editingCollectionName: Ref<string | null> = ref(null);
+  const collectionStore = useCollectionStore();
+  collectionStore.loadCollection();
+  const { collections } = storeToRefs(collectionStore)
 
-function onEditCollection(collectionId: string) {
-  editingCollection.value = collections.value?.find(c => c.id == collectionId) ?? null;
-  editingCollectionName.value = editingCollection.value!.name;
-  showEditDialog.value = true;
-}
-
-function onDeleteCollection(collectionId: string) {
-  editingCollection.value = collections.value?.find(c => c.id == collectionId) ?? null;
-  editingCollectionName.value = editingCollection.value!.name;
-  showDeleteDialog.value = true;
-}
-
-function onDialogClose() {
-  showEditDialog.value = false;
-  showDeleteDialog.value = false;
-}
-
-function onDialogSave() {
-  editingCollection.value!.name = editingCollectionName.value!;
-  showEditDialog.value = false;
-  collectionStore.saveCollection();
-}
-
-function onDialogDelete() {
-  const collectionToDelete = collections?.value?.find(c => c.id == editingCollection.value?.id) ?? null;
-  collectionStore.collections = collections?.value?.filter(c => c.id !== collectionToDelete?.id)!;
-  showDeleteDialog.value = false;
-  collectionStore.saveCollection();
-}
-
-function onAddNewCollection() {
-  const newCollection: Collection = { 
-    id: crypto.randomUUID(),
-    name: 'New Collection',
-    items: []
+  function onEditCollection(collectionId: string) {
+    editingCollection.value = collections.value?.find(c => c.id == collectionId) ?? null;
+    editingCollectionName.value = editingCollection.value!.name;
+    showEditDialog.value = true;
   }
-  collections.value?.push(newCollection);
-  collectionStore.saveCollection();
-}
 
-function onRowClick(url: string) {
-  router.push(url);
-}
+  function onDeleteCollection(collectionId: string) {
+    editingCollection.value = collections.value?.find(c => c.id == collectionId) ?? null;
+    editingCollectionName.value = editingCollection.value!.name;
+    showDeleteDialog.value = true;
+  }
+
+  function onDialogClose() {
+    showEditDialog.value = false;
+    showDeleteDialog.value = false;
+  }
+
+  function onDialogSave() {
+    editingCollection.value!.name = editingCollectionName.value!;
+    showEditDialog.value = false;
+    collectionStore.saveCollection();
+  }
+
+  function onDialogDelete() {
+    const collectionToDelete = collections?.value?.find(c => c.id == editingCollection.value?.id) ?? null;
+    collectionStore.collections = collections?.value?.filter(c => c.id !== collectionToDelete?.id)!;
+    showDeleteDialog.value = false;
+    collectionStore.saveCollection();
+  }
+
+  function onAddNewCollection() {
+    const newCollection: Collection = { 
+      id: crypto.randomUUID(),
+      name: 'New Collection',
+      items: []
+    }
+    collections.value?.push(newCollection);
+    collectionStore.saveCollection();
+  }
+
+  function onRowClick(url: string) {
+    router.push(url);
+  }
 </script>
 
 <template>
@@ -166,7 +166,7 @@ function onRowClick(url: string) {
 @media (max-width: 767px) {
   /* Stack table rows as individual cards */
   thead {
-    display: none; /* Hide table headers */
+    display: none;
   }
   table {
     background-color: var(--color-background);
@@ -218,7 +218,6 @@ function onRowClick(url: string) {
     margin-top: 0.5rem;
   }
 
-  /* Actions styling on new line */
   .actions {
     margin-top: 0.5rem;
     width: 100%;

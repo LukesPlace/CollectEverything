@@ -1,3 +1,7 @@
+<script setup lang="ts">
+  const isChecked = defineModel();
+</script>
+
 <template>
   <label class="checkbox-container">
     <input type="checkbox" v-model="isChecked" />
@@ -5,10 +9,6 @@
     <span class="checkbox-label">Completed</span>
   </label>
 </template>
-
-<script setup lang="ts">
-const isChecked = defineModel();
-</script>
 
 <style scoped>
 

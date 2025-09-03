@@ -1,3 +1,40 @@
+<script setup lang="ts">
+  import { ref, watch, defineProps } from 'vue';
+
+  const props = defineProps<{
+    modelValue?: string[]
+  }>();
+
+  const newTag = ref('');
+  const showInput = ref(false);
+  const tags = defineModel<string[]>({ required: true });
+  if (!tags.value) tags.value = [];
+
+  watch(() => props.modelValue, (val) => {
+    tags.value = val ?? [];
+  });
+
+  function toggleInput() {
+    if (showInput.value && newTag.value.trim()) {
+      addTag();
+    }
+    showInput.value = !showInput.value;
+  }
+
+  function addTag() {
+    const trimmed = newTag.value.trim();
+    if (trimmed && !tags.value.includes(trimmed)) {
+      tags.value.push(trimmed);
+    }
+    newTag.value = '';
+    showInput.value = false;
+  }
+
+  function removeTag(index: number) {
+    tags.value.splice(index, 1);
+  }
+</script>
+
 <template>
   <div class="tags-section">
     <label for="tag-input" class="tags-label">Tags:</label>
@@ -24,43 +61,6 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref, watch, defineProps } from 'vue';
-
-const props = defineProps<{
-  modelValue?: string[]
-}>();
-
-const newTag = ref('');
-const showInput = ref(false);
-const tags = defineModel<string[]>({ required: true });
-if (!tags.value) tags.value = [];
-
-watch(() => props.modelValue, (val) => {
-  tags.value = val ?? [];
-});
-
-function toggleInput() {
-  if (showInput.value && newTag.value.trim()) {
-    addTag();
-  }
-  showInput.value = !showInput.value;
-}
-
-function addTag() {
-  const trimmed = newTag.value.trim();
-  if (trimmed && !tags.value.includes(trimmed)) {
-    tags.value.push(trimmed);
-  }
-  newTag.value = '';
-  showInput.value = false;
-}
-
-function removeTag(index: number) {
-  tags.value.splice(index, 1);
-}
-</script>
 
 <style scoped>
 .tags-label {

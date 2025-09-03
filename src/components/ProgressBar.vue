@@ -1,23 +1,23 @@
+<script setup lang="ts">
+  import { computed } from 'vue';
+
+  const props = defineProps<{
+    completedItems: number,
+    totalItems: number,
+  }>();
+
+  const completionPercentage = computed(() => {
+    const percentage = Math.round((props.completedItems / props.totalItems) * 100);
+    return !isNaN(percentage) ? percentage : 0;
+  });
+</script>
+
 <template>
   <div class="progress-bar-container" :class="{ 'completed': completionPercentage === 100 }">
     <div class="progress-bar" :style="{ width: `${completionPercentage}%` }"></div>
     <span class="progress-text">{{ props.completedItems }}/{{ props.totalItems }} - {{ completionPercentage }}%</span>
   </div>
 </template>
-
-<script setup lang="ts">
-import { computed } from 'vue';
-
-const props = defineProps<{
-  completedItems: number,
-  totalItems: number,
-}>();
-
-const completionPercentage = computed(() => {
-  const percentage = Math.round((props.completedItems / props.totalItems) * 100);
-  return !isNaN(percentage) ? percentage : 0;
-});
-</script>
 
 <style scoped>
 .progress-bar-container {

@@ -1,3 +1,22 @@
+<script setup lang="ts">
+  import { type Ref } from 'vue';
+
+  const selectedFile: Ref<string | null> = defineModel() as Ref<string | null>;
+
+  function onFileChange(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === "string") {
+          selectedFile.value = reader.result;
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+</script>
+
 <template>
   <div class="file-input-container">
     <label class="file-input-label" for="file-upload">
@@ -7,25 +26,6 @@
     <input type="file" id="file-upload" @change="onFileChange" />
   </div>
 </template>
-
-<script setup lang="ts">
-import { type Ref } from 'vue';
-
-const selectedFile: Ref<string | null> = defineModel() as Ref<string | null>;
-
-function onFileChange(event: any) {
-  const file = event.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        selectedFile.value = reader.result;
-      }
-    };
-    reader.readAsDataURL(file);
-  }
-}
-</script>
 
 <style scoped>
 .file-input-container {

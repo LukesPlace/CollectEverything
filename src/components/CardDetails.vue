@@ -1,3 +1,58 @@
+<script setup lang="ts">
+  import { ref, watch, defineEmits, type Ref } from 'vue';
+  import { type CollectionItem } from '@/stores/collection';
+  import { useCollectionStore } from '@/stores/collection';
+  import FileInput from './FileInput.vue';
+  import Tag from './Tag.vue';
+  import ToggleButton from './ToggleButton.vue';
+  import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+
+  const collectionStore = useCollectionStore();
+  const props = defineProps<{
+    isVisible: Boolean,
+    item: CollectionItem,
+  }>();
+
+  const emit = defineEmits(['close', 'save']);
+
+  // Local data to edit card details before saving. Dont apply on cancel.
+  const localName: Ref<string> = ref(props.item.name);
+  const localDescription: Ref<string | null> = ref(props.item.description);
+  const localCompleted: Ref<boolean> = ref(props.item.completed);
+  const localImageBase64: Ref<string | null> = ref(null); // Store the base64 string
+  const localTags: Ref<Array<string>> = ref(props.item.tags ?? []);
+  const localCategory: Ref<string | null> = ref(null);
+
+  const isOpen = ref(false);
+
+
+  watch(() => props.isVisible, (newValue) => {
+    if (newValue) {
+      localName.value = props.item.name;
+      localDescription.value = props.item.description;
+      localCompleted.value = props.item.completed;
+      localImageBase64.value = props.item.imageBase64;
+      localTags.value = props.item.tags ?? [];
+      localCategory.value = props.item.category ?? null;
+    }
+  });
+
+  function closeModal() {
+    emit('close');
+  }
+
+  function saveChanges() {
+    props.item.name = localName.value;
+    props.item.description = localDescription.value;
+    props.item.completed = localCompleted.value;
+    props.item.imageBase64 = localImageBase64.value;
+    props.item.tags = localTags.value;
+    props.item.category = localCategory.value;
+    collectionStore.saveCollection();
+    emit('save');
+  }
+</script>
+
 <template>
   <div v-if="isVisible" class="modal-overlay">
     <div class="wrapper">
@@ -58,61 +113,6 @@
     </div>
   </div>
   </template>
-
-<script setup lang="ts">
-import { ref, watch, defineEmits, type Ref } from 'vue';
-import { type CollectionItem } from '@/stores/collection';
-import { useCollectionStore } from '@/stores/collection';
-import FileInput from './FileInput.vue';
-import Tag from './Tag.vue';
-import ToggleButton from './ToggleButton.vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-
-const collectionStore = useCollectionStore();
-const props = defineProps<{
-  isVisible: Boolean,
-  item: CollectionItem,
-}>();
-
-const emit = defineEmits(['close', 'save']);
-
-// Local data to edit card details before saving. Dont apply on cancel.
-const localName: Ref<string> = ref(props.item.name);
-const localDescription: Ref<string | null> = ref(props.item.description);
-const localCompleted: Ref<boolean> = ref(props.item.completed);
-const localImageBase64: Ref<string | null> = ref(null); // Store the base64 string
-const localTags: Ref<Array<string>> = ref(props.item.tags ?? []);
-const localCategory: Ref<string | null> = ref(null);
-
-const isOpen = ref(false);
-
-
-watch(() => props.isVisible, (newValue) => {
-  if (newValue) {
-    localName.value = props.item.name;
-    localDescription.value = props.item.description;
-    localCompleted.value = props.item.completed;
-    localImageBase64.value = props.item.imageBase64;
-    localTags.value = props.item.tags ?? [];
-    localCategory.value = props.item.category ?? null;
-  }
-});
-
-function closeModal() {
-  emit('close');
-}
-
-function saveChanges() {
-  props.item.name = localName.value;
-  props.item.description = localDescription.value;
-  props.item.completed = localCompleted.value;
-  props.item.imageBase64 = localImageBase64.value;
-  props.item.tags = localTags.value;
-  props.item.category = localCategory.value;
-  collectionStore.saveCollection();
-  emit('save');
-}
-</script>
 
 <style scoped>
 .modal-overlay {

@@ -1,3 +1,31 @@
+<script setup lang="ts">
+  import { ref, defineProps, watch } from 'vue';
+
+  const props = defineProps<{
+    title: string;
+    show: boolean;
+    isDeleteDialog?: boolean
+  }>();
+
+  const isVisible = ref(props.show);
+
+  watch(() => props.show, (newVal) => {
+    isVisible.value = newVal;
+  });
+
+  const emit = defineEmits(['close', 'save', 'delete'])
+  function onClose() {
+    isVisible.value = false;
+    emit('close');
+  }
+  function onSave() {
+    emit('save');
+  }
+  function onDelete() {
+    emit('delete');
+  }
+</script>
+
 <template>
   <div v-if="isVisible" class="dialog-overlay">
     <div class="dialog-content">
@@ -16,34 +44,6 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref, defineProps, watch } from 'vue';
-
-const props = defineProps<{
-  title: string;
-  show: boolean;
-  isDeleteDialog?: boolean
-}>();
-
-const isVisible = ref(props.show);
-
-watch(() => props.show, (newVal) => {
-  isVisible.value = newVal;
-});
-
-const emit = defineEmits(['close', 'save', 'delete'])
-function onClose() {
-  isVisible.value = false;
-  emit('close');
-}
-function onSave() {
-  emit('save');
-}
-function onDelete() {
-  emit('delete');
-}
-</script>
 
 <style scoped>
 .dialog-overlay {

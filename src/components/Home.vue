@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import HomeItem from './HomeItem.vue'
-import DocumentationIcon from './icons/IconDocumentation.vue'
-import ToolingIcon from './icons/IconTooling.vue'
-import EcosystemIcon from './icons/IconEcosystem.vue'
-import SupportIcon from './icons/IconSupport.vue'
+  import HomeItem from './HomeItem.vue'
+  import DocumentationIcon from './icons/IconDocumentation.vue'
+  import ToolingIcon from './icons/IconTooling.vue'
+  import EcosystemIcon from './icons/IconEcosystem.vue'
+  import SupportIcon from './icons/IconSupport.vue'
 </script>
 
 <template>

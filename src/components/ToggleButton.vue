@@ -1,19 +1,19 @@
+<script setup lang="ts">
+  const checked = defineModel();
+
+  const props = defineProps<{
+    checkedState: string,
+    uncheckedState: string
+  }>();
+
+  function toggleChecked() {
+    checked.value = !checked.value;
+  }
+</script>
+
 <template>
   <button :class="['toggle-btn', { 'checked': !checked }]" @click="toggleChecked">{{ checked ? props.checkedState : props.uncheckedState }}</button>
 </template>
-
-<script setup lang="ts">
-const checked = defineModel();
-
-const props = defineProps<{
-  checkedState: string,
-  uncheckedState: string
-}>();
-
-function toggleChecked() {
-  checked.value = !checked.value;
-}
-</script>
 
 <style scoped>
 

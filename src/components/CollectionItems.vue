@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import type { CollectionItem } from '@/stores/collection';
-import Card from './Card.vue';
-import { computed } from 'vue';
+  import type { CollectionItem } from '@/stores/collection';
+  import Card from './Card.vue';
+  import { computed } from 'vue';
 
-const props = defineProps<{
-  items: Array<CollectionItem>
-}>();
+  const props = defineProps<{
+    items: Array<CollectionItem>
+  }>();
 
-// Group items by category
-const groupedItems = computed(() => {
-  return props.items.reduce((acc, item) => {
-    const key = item.category || "Uncategorized";
-    if (!acc[key]) acc[key] = [];
-    acc[key].push(item);
-    return acc;
-  }, {} as Record<string, CollectionItem[]>);
-});
+  // Group items by category
+  const groupedItems = computed(() => {
+    return props.items.reduce((acc, item) => {
+      const key = item.category || "Uncategorized";
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(item);
+      return acc;
+    }, {} as Record<string, CollectionItem[]>);
+  });
 </script>
 
 <template>
