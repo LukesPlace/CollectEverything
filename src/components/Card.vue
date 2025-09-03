@@ -147,7 +147,6 @@ function onDialogSave() {
 .card-title {
   font-weight: bold;
   margin: 0;
-  /* color: var(--primary-green, #32cd32); */
 }
 
 .card-description {
@@ -176,7 +175,7 @@ function onDialogSave() {
 .card-incomplete {
   background-color: #f0f0f0;
   color: #888888;
-  opacity: 0.3;
+  filter: brightness(50%);
   position: relative;
 }
 
@@ -188,9 +187,17 @@ function onDialogSave() {
   transform: translate(-50%, -50%);
   font-size: 2rem;
   color: rgba(0, 0, 0, 1);
-  pointer-events: none; /* Prevents interaction with the icon */
+  pointer-events: none;
+  stroke: white;
+  stroke-width: 10px;
+  paint-order: stroke fill;
 }
 
+.lock-icon path {
+  stroke: white;
+  stroke-width: 2px;
+  paint-order: stroke fill;
+}
 
 .tags-list {
   display: flex;
@@ -212,6 +219,6 @@ function onDialogSave() {
 
 .tag-more {
   background-color: var(--primary-green);
-  cursor: help; /* Show a "hint" cursor */
+  cursor: help;
 }
 </style>

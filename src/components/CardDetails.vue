@@ -2,7 +2,8 @@
   <div v-if="isVisible" class="modal-overlay">
     <div class="wrapper">
       <div class="item-image" :class="[{ 'card-incomplete': !localCompleted }]">
-        <img :src="localImageBase64 ?? 'https://via.placeholder.com/300x200'" alt="Card image" class="card-image" />
+        <img v-if="localImageBase64" :src="localImageBase64 ?? 'https://via.placeholder.com/300x200'" alt="Card image" class="card-image" />
+        <div v-else class="card-placeholder">No image</div>
         <font-awesome-icon v-if="!localCompleted" :icon="['fas', 'lock']" class="lock-icon" />
       </div>
       <div class="modal-content">
@@ -120,7 +121,7 @@ function saveChanges() {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.9);
+  background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -240,25 +241,54 @@ textarea {
 }
 .accordion-enter-to,
 .accordion-leave-from {
-  max-height: 500px; /* plenty to fit form */
+  max-height: 500px;
   opacity: 1;
   padding: 1rem;
 }
 
 .card-incomplete {
-  opacity: 0.5;
+  filter: brightness(50%);
   position: relative;
 }
 
-/* Lock icon styling */
 .lock-icon {
-  height: 35%;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 2rem;
-  color: rgba(0, 0, 0, 1);
-  pointer-events: none; /* Prevents interaction with the icon */
+  width: 35%;
+  height: auto;
+  color: black;
+  stroke: white;
+  stroke-width: 10px;
+  paint-order: stroke fill;
+}
+
+.item-image {
+  width: 30vw;
+  max-width: 600px;
+  height: auto;
+  position: relative;
+}
+
+.item-image img {
+  width: 100%;
+  height: auto;
+  display: block; 
+  border-radius: 10px;
+}
+
+.card-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ddd;
+  color: #555;
+  font-size: 1rem;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 10px;
 }
 </style>
