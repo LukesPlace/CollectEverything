@@ -1,38 +1,71 @@
 <template>
   <div v-if="isVisible" class="modal-overlay">
-    <div class="modal-content">
-      <h2>Edit Item Details</h2>
-      <div class="modal-body">
-        <ToggleButton v-model="localCompleted" unchecked-state="Add to collection?" checked-state="Remove from collection?"></ToggleButton>
-        <label for="name">Name:</label>
-        <input type="text" v-model="localName" id="name" />
-
-        <label for="description">Description:</label>
-        <textarea v-model="localDescription" id="description"></textarea>
-
-        <Tag v-model="localTags"></Tag>
-        <label for="category">Category</label>
-        <input type="text" v-model="localCategory" id="category"></input>
-        <FileInput v-model="localImageBase64"></FileInput>
+    <div class="wrapper">
+      <div class="item-image" :class="[{ 'card-incomplete': !localCompleted }]">
+        <img :src="localImageBase64 ?? 'https://via.placeholder.com/300x200'" alt="Card image" class="card-image" />
+        <font-awesome-icon v-if="!localCompleted" :icon="['fas', 'lock']" class="lock-icon" />
       </div>
-
-
-      <div class="modal-actions">
-        <button @click="closeModal" class="secondary-btn">Cancel</button>
-        <button @click="saveChanges" class="primary-btn">Save</button>
+      <div class="modal-content">
+        <h2>Edit Item Details</h2>
+        <div class="modal-body">
+          <ToggleButton
+          v-model="localCompleted"
+          unchecked-state="Add to collection?"
+          checked-state="Remove from collection?"
+          />
+          
+          <label for="name">Name:</label>
+          <input type="text" v-model="localName" id="name" />
+          
+          <!-- Accordion -->
+          <div class="accordion">
+            <button class="accordion-header" @click="isOpen = !isOpen">
+              Advanced Details
+              <span class="chevron" :class="{ rotated: isOpen }">⌄</span>
+            </button>
+            
+            <transition name="accordion">
+              <div v-if="isOpen" class="accordion-body">
+                <div class="description">
+                  <label for="description">Description:</label>
+                  <textarea v-model="localDescription" id="description"></textarea>
+                </div>
+                
+                <div class="tags">
+                  <Tag v-model="localTags" />
+                </div>
+                
+                <div class="category">
+                  <label for="category">Category</label>
+                  <input type="text" v-model="localCategory" id="category" />
+                </div>
+                
+                <div class="fileInput">
+                  <FileInput v-model="localImageBase64" />
+                </div>
+              </div>
+            </transition>
+          </div>
+        </div>
+        
+        
+        <div class="modal-actions">
+          <button @click="closeModal" class="secondary-btn">Cancel</button>
+          <button @click="saveChanges" class="primary-btn">Save</button>
+        </div>
       </div>
     </div>
   </div>
-</template>
+  </template>
 
 <script setup lang="ts">
 import { ref, watch, defineEmits, type Ref } from 'vue';
 import { type CollectionItem } from '@/stores/collection';
 import { useCollectionStore } from '@/stores/collection';
-import Checkbox from './Checkbox.vue';
 import FileInput from './FileInput.vue';
 import Tag from './Tag.vue';
 import ToggleButton from './ToggleButton.vue';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 const collectionStore = useCollectionStore();
 const props = defineProps<{
@@ -49,6 +82,8 @@ const localCompleted: Ref<boolean> = ref(props.item.completed);
 const localImageBase64: Ref<string | null> = ref(null); // Store the base64 string
 const localTags: Ref<Array<string>> = ref(props.item.tags ?? []);
 const localCategory: Ref<string | null> = ref(null);
+
+const isOpen = ref(false);
 
 
 watch(() => props.isVisible, (newValue) => {
@@ -85,13 +120,22 @@ function saveChanges() {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
 }
 
+.wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  margin-left: 5%;
+  gap: 5%;
+}
 .modal-content {
   background-color: #1e1e1e;
   color: #ffffff;
@@ -143,5 +187,78 @@ textarea {
 .primary-btn {
   background-color: var(--primary-green, #32cd32);
   color: #ffffff;
+}
+
+/* Accordion Styling */
+
+.accordion {
+  margin-top: 1rem;
+  border: 1px solid #333;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #2a2a2a;
+}
+
+.accordion-header {
+  width: 100%;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  background: #1e1e1e;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chevron {
+  transition: transform 0.3s ease;
+}
+
+.chevron.rotated {
+  transform: rotate(180deg);
+}
+
+.accordion-body {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+/* Smooth open/close transition */
+.accordion-enter-active,
+.accordion-leave-active {
+  transition: all 0.3s ease;
+}
+.accordion-enter-from,
+.accordion-leave-to {
+  max-height: 0;
+  opacity: 0;
+  padding: 0 1rem;
+}
+.accordion-enter-to,
+.accordion-leave-from {
+  max-height: 500px; /* plenty to fit form */
+  opacity: 1;
+  padding: 1rem;
+}
+
+.card-incomplete {
+  opacity: 0.5;
+  position: relative;
+}
+
+/* Lock icon styling */
+.lock-icon {
+  height: 35%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  color: rgba(0, 0, 0, 1);
+  pointer-events: none; /* Prevents interaction with the icon */
 }
 </style>

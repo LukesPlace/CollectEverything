@@ -180,7 +180,6 @@ function onDialogSave() {
   position: relative;
 }
 
-/* Lock icon styling */
 .lock-icon {
   height: 5rem;
   position: absolute;

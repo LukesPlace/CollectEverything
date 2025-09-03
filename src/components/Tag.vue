@@ -9,43 +9,54 @@
     </ul>
 
     <div class="add-tag">
+      <!-- Only show input when editing -->
       <input
+        v-if="showInput"
         id="tag-input"
         v-model="newTag"
         @keyup.enter="addTag"
         type="text"
         placeholder="Add a tag"
       />
-      <button class="primary-btn" @click="addTag">Add</button>
+      <button class="primary-btn small-btn" @click="toggleInput">
+        {{ showInput ? 'Save Tag' : 'Add Tag' }}
+      </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, defineProps, defineEmits } from 'vue';
+import { ref, watch, defineProps } from 'vue';
 
 const props = defineProps<{
   modelValue?: string[]
 }>();
 
 const newTag = ref('');
-const tags = defineModel<string[]>({required: true});
-if(!tags.value)
-  tags.value = [];
+const showInput = ref(false);
+const tags = defineModel<string[]>({ required: true });
+if (!tags.value) tags.value = [];
 
 watch(() => props.modelValue, (val) => {
   tags.value = val ?? [];
 });
 
+function toggleInput() {
+  if (showInput.value && newTag.value.trim()) {
+    addTag();
+  }
+  showInput.value = !showInput.value;
+}
+
 function addTag() {
   const trimmed = newTag.value.trim();
   if (trimmed && !tags.value.includes(trimmed)) {
     tags.value.push(trimmed);
-    newTag.value = '';
   }
+  newTag.value = '';
+  showInput.value = false;
 }
 
-// Remove a tag
 function removeTag(index: number) {
   tags.value.splice(index, 1);
 }
@@ -61,7 +72,6 @@ function removeTag(index: number) {
   flex-wrap: wrap;
   gap: 0.5rem;
   padding: 0;
-  margin: 1rem 0 1rem 0;
   list-style: none;
 }
 
@@ -69,8 +79,8 @@ function removeTag(index: number) {
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  background-color: var(--primary-green);
-  color: white;
+  background-color: #f0f0f0;
+  color: #333;
   padding: 0.3rem 0.6rem;
   border-radius: 12px;
   font-size: 0.9rem;
@@ -90,16 +100,23 @@ function removeTag(index: number) {
 
 .add-tag input {
   flex: 1;
-  padding: 0.5em 0.75em;
+  padding: 0.25em 0.5em; /* smaller height */
   border-radius: 6px;
   border: 1px solid #ddd;
   outline: none;
   background-color: #f8f8f8;
   font-family: inherit;
+  font-size: 0.8rem;
 }
 
 .add-tag input:focus {
   border-color: var(--primary-green);
-  box-shadow: 0 0 0 3px var(--primary-green);
+  box-shadow: 0 0 0 2px var(--primary-green);
+}
+
+/* smaller button */
+.small-btn {
+  padding: 0.3em 0.8em;
+  font-size: 0.85rem;
 }
 </style>
