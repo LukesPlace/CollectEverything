@@ -110,20 +110,23 @@ function onDialogSave() {
 .card {
   cursor: pointer;
   width: 300px;
-  background-color: var(--card-bg, #1e1e1e);
-  color: var(--text-color, #ffffff);
+  /* background-color: var(#1e1e1e);
+  color: var(--text-color, #ffffff); */
+  background-color: #f5f5f0;
+  color:  #1e1e1e;
   border-radius: 12px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+  /* box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2); */
+  box-shadow: 0 0 10px rgba(0, 255, 128, 0.2); /* subtle green glow */
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  margin: 1rem;
   display: flex;
   flex-direction: column;
 }
 
 .card:hover {
   transform: translateY(-5px);
-  box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.3);
+  /* box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.3); */
+    box-shadow: 0 0 20px rgba(0, 255, 128, 0.4); /* stronger glow on hover */
 }
 
 .card-image {
@@ -138,17 +141,18 @@ function onDialogSave() {
   flex-direction: column;
   gap: 0.5rem;
   height: 100%;
+  color: #1e1e1e;
 }
 
 .card-title {
   font-weight: bold;
   margin: 0;
-  color: var(--primary-green, #32cd32);
+  /* color: var(--primary-green, #32cd32); */
 }
 
 .card-description {
   font-size: 0.95rem;
-  color: var(--text-color-secondary, #cccccc);
+  color: var(--text-color-secondary, var(--background-color));
   margin: 0;
 }
 
@@ -176,26 +180,15 @@ function onDialogSave() {
   position: relative;
 }
 
-/* Optional "locked" overlay for incomplete state */
-/* .card--incomplete::after {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 1.5rem;
-  color: rgba(0, 0, 0, 0.2);
-  text-align: center;
-} */
-
 /* Lock icon styling */
 .lock-icon {
-  height: 3rem;
+  height: 5rem;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: 2rem;
-  color: rgba(0, 0, 0, 0.8);
+  color: rgba(0, 0, 0, 1);
   pointer-events: none; /* Prevents interaction with the icon */
 }
 
@@ -219,7 +212,7 @@ function onDialogSave() {
 }
 
 .tag-more {
-  background-color: #555;
+  background-color: var(--primary-green);
   cursor: help; /* Show a "hint" cursor */
 }
 </style>

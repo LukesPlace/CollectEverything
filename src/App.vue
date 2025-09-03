@@ -25,7 +25,12 @@ function onHomeButtonClick() {
   <RouterView />
 </template>
 
-<style scoped>
+<style>
+
+body {
+  font-family: 'Rubik', sans-serif;
+}
+
 button {
   background-color: var(--color-background);
   background: none;

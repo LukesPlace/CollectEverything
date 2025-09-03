@@ -23,7 +23,7 @@ const groupedItems = computed(() => {
       <h2 class="category-title">{{ category || "Uncategorized" }}</h2>
 
       <div class="card-list">
-        <div v-for="item in items" :key="item.id" class="item-card">
+        <div v-for="item in items" :key="item.id">
           <card :collection-item="item"></card>
         </div>
       </div>
@@ -87,13 +87,6 @@ const groupedItems = computed(() => {
   gap: 1rem;
 }
 
-.item-card {
-  background: #1e1e1e;
-  padding: 1rem;
-  border-radius: 8px;
-  color: #fff;
-  width: 200px;
-}
 
 .tags-list {
   display: flex;
