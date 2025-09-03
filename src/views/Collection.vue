@@ -6,16 +6,16 @@
   import { vAutoAnimate } from '@formkit/auto-animate/vue';
   import ProgressBar from '@/components/ProgressBar.vue';
   import ToggleButton from '@/components/ToggleButton.vue';
+  import CardDetails from '@/components/CardDetails.vue';
 
   const props = defineProps<{
     id: string,
   }>();
 
   const collectionStore = useCollectionStore();
-  collectionStore.loadCollection();
 
   const collectionName: string = props.id;
-  const { collections } = storeToRefs(collectionStore)
+  const { collections } = storeToRefs(collectionStore);
   const currentCollectionItems = collections.value?.find(c => c.name == collectionName)?.items;
 
   const filteredCollectionItems = computed(()=> {
@@ -32,6 +32,8 @@
 
   const filterValue: Ref<string | null> = ref(null);
   const showAll: Ref<boolean> = ref(true);
+  const showCardDetails: Ref<boolean> = ref(false);
+  const collectionItem: Ref<CollectionItem | null> = ref(null);
 
   function onNewCollectionItem() {
     const newCollectionItem: CollectionItem = { 
@@ -45,8 +47,24 @@
     };
 
     currentCollectionItems?.push(newCollectionItem);
-    collectionStore.saveCollection();
+    collectionStore.saveCollections();
+
+    // Open dialog immediately
+    collectionItem.value = newCollectionItem;
+    showCardDetails.value = true;
   }
+
+  function onDialogClose() {
+    showCardDetails.value = false;
+    collectionItem.value = null; // clear selected item
+  }
+
+  function onDialogSave() {
+    showCardDetails.value = false;
+    collectionItem.value = null;
+    collectionStore.saveCollections(); // make sure changes persist
+  }
+
 </script>
 
 <template>
@@ -62,6 +80,7 @@
     <progress-bar :completed-items="filteredCollectionItems?.filter(c => c.completed == true).length ?? 0" :total-items="filteredCollectionItems?.length ?? 0"> </progress-bar>
     <collection-items :items="filteredCollectionItems ?? []" v-auto-animate></collection-items>
   </div>
+  <card-details v-if="collectionItem" :is-visible="showCardDetails" :item="collectionItem" @save="onDialogSave" @close="onDialogClose"></card-details>
 </template>
 
 <style>

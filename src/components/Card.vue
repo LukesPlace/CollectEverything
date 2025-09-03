@@ -14,13 +14,13 @@ function onShowCardDetails() {
   showCardDetails.value = true;
 }
 
-function onDialogClose() {
-  showCardDetails.value = false;
-}
+// function onDialogClose() {
+//   showCardDetails.value = false;
+// }
 
-function onDialogSave() {
-  showCardDetails.value = false;
-}
+// function onDialogSave() {
+//   showCardDetails.value = false;
+// }
 
 
 </script>
@@ -56,7 +56,7 @@ function onDialogSave() {
     </div>
   </div>
 
-  <card-details :is-visible="showCardDetails" :item="collectionItem" @save="onDialogSave" @close="onDialogClose"></card-details>
+  <!-- <card-details :is-visible="showCardDetails" :item="collectionItem" @save="onDialogSave" @close="onDialogClose"></card-details> -->
 </template>
 
 <style scoped>

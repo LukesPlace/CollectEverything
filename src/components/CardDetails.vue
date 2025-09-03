@@ -48,7 +48,7 @@
     props.item.imageBase64 = localImageBase64.value;
     props.item.tags = localTags.value;
     props.item.category = localCategory.value;
-    collectionStore.saveCollection();
+    collectionStore.saveCollections();
     emit('save');
   }
 </script>

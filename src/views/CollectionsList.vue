@@ -12,7 +12,7 @@
   const editingCollection: Ref<Collection | null> = ref(null);
   const editingCollectionName: Ref<string | null> = ref(null);
   const collectionStore = useCollectionStore();
-  collectionStore.loadCollection();
+  collectionStore.loadCollections();
   const { collections } = storeToRefs(collectionStore)
 
   function onEditCollection(collectionId: string) {
@@ -35,14 +35,14 @@
   function onDialogSave() {
     editingCollection.value!.name = editingCollectionName.value!;
     showEditDialog.value = false;
-    collectionStore.saveCollection();
+    collectionStore.saveCollections();
   }
 
   function onDialogDelete() {
     const collectionToDelete = collections?.value?.find(c => c.id == editingCollection.value?.id) ?? null;
     collectionStore.collections = collections?.value?.filter(c => c.id !== collectionToDelete?.id)!;
     showDeleteDialog.value = false;
-    collectionStore.saveCollection();
+    collectionStore.saveCollections();
   }
 
   function onAddNewCollection() {
@@ -52,7 +52,7 @@
       items: []
     }
     collections.value?.push(newCollection);
-    collectionStore.saveCollection();
+    collectionStore.saveCollections();
   }
 
   function onRowClick(url: string) {

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import router from './router';
+  import { RouterLink, RouterView } from 'vue-router'
+  import router from './router';
 
 
-function onHomeButtonClick() {
-  router.push('/');
-}
+  function onHomeButtonClick() {
+    router.push('/');
+  }
 </script>
 
 <template>
