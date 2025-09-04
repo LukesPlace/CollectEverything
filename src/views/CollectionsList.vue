@@ -6,6 +6,7 @@
   import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
   import router from '@/router';
   import ProgressBar from '@/components/ProgressBar.vue';
+import { slugify } from '@/utils/string';
 
   const showEditDialog: Ref<boolean> = ref(false);
   const showDeleteDialog: Ref<boolean> = ref(false);
@@ -32,8 +33,11 @@
     showDeleteDialog.value = false;
   }
 
-  function onDialogSave() {
-    editingCollection.value!.name = editingCollectionName.value!;
+  function onRenameSave() {
+    if(editingCollection.value && editingCollectionName.value) {
+      collectionStore.renameCollection(editingCollection.value?.id, editingCollectionName.value);
+    }
+
     showEditDialog.value = false;
     collectionStore.saveCollections();
   }
@@ -49,6 +53,7 @@
     const newCollection: Collection = { 
       id: crypto.randomUUID(),
       name: 'New Collection',
+      slug: slugify('New Collection'),
       items: []
     }
     collections.value?.push(newCollection);
@@ -75,7 +80,7 @@
         </thead>
         <tbody>
           <tr v-for="collection in collections" :key="collection.id" class="clickable-row">
-            <td class="collection-name" @click="onRowClick(`/collection/${collection.name}`)">{{ collection.name }}</td>
+            <td class="collection-name" @click="onRowClick(`/collection/${collection.slug}`)">{{ collection.name }}</td>
             <td><progress-bar :completed-items="collection.items?.filter(c => c.completed == true).length ?? 0" :total-items="collection.items?.length ?? 0"> </progress-bar></td>
             <td class="actions">
               <button @click="onEditCollection(collection.id)" class="primary-btn"><font-awesome-icon :icon="['fas', 'pen']" /></button>
@@ -92,7 +97,7 @@
       </table>
     </div>
   </div>
-  <confirmation-dialog title="Edit collection" :show="showEditDialog" @close="onDialogClose" @save="onDialogSave">
+  <confirmation-dialog title="Edit collection" :show="showEditDialog" @close="onDialogClose" @save="onRenameSave">
     <div>
       <span class="default-text">Collection Name</span>
       <input type="text" v-model="editingCollectionName">

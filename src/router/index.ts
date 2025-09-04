@@ -11,7 +11,7 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path: '/collection/:id',
+      path: '/collection/:slug',
       name: 'collection',
       component: () => import('../views/Collection.vue'),
       props: true,

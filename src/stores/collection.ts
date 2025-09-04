@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
+import { slugify } from '@/utils/string';
 
 export interface CollectionItem {
   id: string;
@@ -14,6 +15,7 @@ export interface CollectionItem {
 export interface Collection {
   id: string;
   name: string;
+  slug: string;
   items: Array<CollectionItem>;
 }
 
@@ -25,27 +27,41 @@ interface CollectionState {
 
 export const useCollectionStore = defineStore('collection', {
   state: (): CollectionState => ({
-    collections: [],
+    collections: JSON.parse(localStorage.getItem('collection') ?? '[]'),
     currentCollection: null,
     editingCardId: null,
   }),
   actions: {
     loadCollections() {
-      const data = localStorage.getItem('collection');
-      this.collections = data ? JSON.parse(data) : [];
+      const raw = localStorage.getItem('collection') ?? '[]';
+      const collections: Collection[] = JSON.parse(raw);
+
+      // Add slug to existing collections if missing
+      this.collections = collections.map(c => ({
+        ...c,
+        slug: c.slug ?? slugify(c.name),
+      }));
     },
     saveCollections() {
       localStorage.setItem('collection', JSON.stringify(this.collections));
     },
-
-    setCurrentCollectionByName(name: string) {
-      this.currentCollection = this.collections.find(c => c.name === name) ?? null;
+    renameCollection(id: string, newName: string) {
+      const collection = this.collections.find(c => c.id === id);
+      if (collection) {
+        collection.name = newName;
+        collection.slug = slugify(newName);
+        this.saveCollections();
+      } 
+    },
+    setCurrentCollectionBySlug(slug: string) {
+      this.currentCollection = this.collections.find(c => c.slug === slug) ?? null;
     },
 
     addCollection(name: string) {
       const newCollection: Collection = {
         id: crypto.randomUUID(),
         name,
+        slug: slugify(name),
         items: [],
       };
       this.collections.push(newCollection);

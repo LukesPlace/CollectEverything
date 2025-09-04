@@ -1,26 +1,43 @@
 <script setup lang="ts">
   import CollectionItems from '@/components/CollectionItems.vue';
-  import { ref, type Ref, computed } from 'vue'
+  import { ref, type Ref, computed, watch } from 'vue'
   import { useCollectionStore, type Collection, type CollectionItem } from '@/stores/collection';
   import { storeToRefs } from 'pinia';
   import ProgressBar from '@/components/ProgressBar.vue';
   import ToggleButton from '@/components/ToggleButton.vue';
   import CardDetails from '@/components/CardDetails.vue';
+import { useRoute } from 'vue-router';
 
   const props = defineProps<{
-    id: string,
+    slug: string,
   }>();
 
   const collectionStore = useCollectionStore();
+  const route = useRoute();
 
-  const collectionName: string = props.id;
   const { collections } = storeToRefs(collectionStore);
-  const currentCollectionItems = collections.value?.find(c => c.name == collectionName)?.items;
+  const collectionSlug: string = props.slug;
+  const currentCollection = collections.value.find(c => c.slug == collectionSlug);
+  const currentCollectionItems = collections.value?.find(c => c.slug == collectionSlug)?.items;
 
   const filterValue: Ref<string | null> = ref(null);
   const showAll: Ref<boolean> = ref(true);
   const showCardDetails: Ref<boolean> = ref(false);
   const collectionItem: Ref<CollectionItem | null> = ref(null);
+
+
+
+  // Get the slug from /collection/:slug
+  const routeSlug = computed(() => String(route.params.slug ?? ''));
+
+  // When either the route id or store collections change, set currentCollection
+  watch(
+    [routeSlug, () => collectionStore.collections],
+    ([slug]) => {
+      if (slug) collectionStore.setCurrentCollectionBySlug(slug);
+    },
+    { immediate: true }
+  );
 
   const filteredCollectionItems = computed(()=> {
     let currentFilteredItems = currentCollectionItems;
@@ -73,7 +90,7 @@
 <template>
   <div class="collection">
     <div class="collection-header">
-      <h1 class="collection-title" :title="collectionName">Your {{ collectionName }}</h1>
+      <h1 class="collection-title" :title="collectionSlug">Your {{ currentCollection?.name }}</h1>
       <toggle-button v-model="showAll" unchecked-state="Show missing?" checked-state="Hide missing?">Show missing?</toggle-button>
       <div class="search-filter">
         <input v-model="filterValue" type="text" placeholder="Search by name or description...">
@@ -95,7 +112,7 @@
 
   .search-filter {
     flex: 1;
-    max-width: 50%; /* Prevents search from growing too large */
+    max-width: 50%;
   }
 
 }
@@ -130,7 +147,7 @@
 }
 
 .collection-header h1 {
-  flex: 1; /* Allows h1 to grow but not take up the whole row */
+  flex: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -138,7 +155,7 @@
 }
 
 .primary-btn {
-  flex-shrink: 0; /* Keeps the button from being resized */
+  flex-shrink: 0;
   white-space: nowrap;
 }
 
