@@ -26,8 +26,10 @@
   const isOpen = ref(false);
 
 
-  watch(() => props.isVisible, (newValue) => {
-    if (newValue) {
+watch(
+  () => [props.isVisible, props.item],
+  ([isVisible]) => {
+    if (isVisible) {
       localName.value = props.item.name;
       localDescription.value = props.item.description;
       localCompleted.value = props.item.completed;
@@ -35,7 +37,9 @@
       localTags.value = props.item.tags ?? [];
       localCategory.value = props.item.category ?? null;
     }
-  });
+  },
+  { immediate: true }
+);
 
   function closeModal() {
     emit('close');
@@ -57,7 +61,7 @@
   <div v-if="isVisible" class="modal-overlay">
     <div class="wrapper">
       <div class="item-image" :class="[{ 'card-incomplete': !localCompleted }]">
-        <img v-if="localImageBase64" :src="localImageBase64 ?? 'https://via.placeholder.com/300x200'" alt="Card image" class="card-image" />
+        <img v-if="localImageBase64" :src="localImageBase64" alt="Card image" class="card-image" />
         <div v-else class="card-placeholder">No image</div>
         <font-awesome-icon v-if="!localCompleted" :icon="['fas', 'lock']" class="lock-icon" />
       </div>

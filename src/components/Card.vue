@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type CollectionItem } from '@/stores/collection';
+import { useCollectionStore, type CollectionItem } from '@/stores/collection';
 import CardDetails from './CardDetails.vue';
 import { ref, type Ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -8,26 +8,19 @@ const props = defineProps<{
   collectionItem: CollectionItem
 }>();
 
-const showCardDetails: Ref<boolean> = ref(false);
+const emits = defineEmits<{
+  (e: 'open', item: CollectionItem): void
+}>();
 
 function onShowCardDetails() {
-  showCardDetails.value = true;
+  emits('open', props.collectionItem);
 }
-
-// function onDialogClose() {
-//   showCardDetails.value = false;
-// }
-
-// function onDialogSave() {
-//   showCardDetails.value = false;
-// }
-
 
 </script>
 
 <template>
-  <div @click="onShowCardDetails" :class="['card', { 'card-incomplete': !collectionItem.completed }]">
-    <img :src="collectionItem.imageBase64 ?? 'https://via.placeholder.com/300x200'" alt="Card image" class="card-image" />
+  <div @click="onShowCardDetails()" :class="['card', { 'card-incomplete': !collectionItem.completed }]">
+    <img v-if="collectionItem.imageBase64" :src="collectionItem.imageBase64" alt="Card image" class="card-image" />
     <font-awesome-icon v-if="!collectionItem.completed" :icon="['fas', 'lock']" class="lock-icon" />
     <div class="card-content" :title="props.collectionItem.name ?? 'New item'">
       <h3 class="card-title">{{ props.collectionItem.name ?? 'New item'}}</h3>

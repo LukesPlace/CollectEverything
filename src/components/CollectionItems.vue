@@ -1,10 +1,14 @@
 <script setup lang="ts">
-  import type { CollectionItem } from '@/stores/collection';
+  import type { Collection, CollectionItem } from '@/stores/collection';
   import Card from './Card.vue';
   import { computed } from 'vue';
 
   const props = defineProps<{
     items: Array<CollectionItem>
+  }>();
+
+  const emits = defineEmits<{
+    (e: 'open', item: CollectionItem): void
   }>();
 
   // Group items by category
@@ -16,6 +20,10 @@
       return acc;
     }, {} as Record<string, CollectionItem[]>);
   });
+
+  function onOpenCard(collectionItem : CollectionItem) {
+    emits('open', collectionItem);
+  }
 </script>
 
 <template>
@@ -24,7 +32,7 @@
 
       <div class="card-list">
         <div v-for="item in items" :key="item.id">
-          <card :collection-item="item"></card>
+          <card :collection-item="item" @open="onOpenCard"></card>
         </div>
       </div>
     </div>

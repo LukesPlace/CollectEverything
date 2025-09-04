@@ -1,9 +1,8 @@
 <script setup lang="ts">
   import CollectionItems from '@/components/CollectionItems.vue';
   import { ref, type Ref, computed } from 'vue'
-  import { useCollectionStore, type CollectionItem } from '@/stores/collection';
+  import { useCollectionStore, type Collection, type CollectionItem } from '@/stores/collection';
   import { storeToRefs } from 'pinia';
-  import { vAutoAnimate } from '@formkit/auto-animate/vue';
   import ProgressBar from '@/components/ProgressBar.vue';
   import ToggleButton from '@/components/ToggleButton.vue';
   import CardDetails from '@/components/CardDetails.vue';
@@ -18,6 +17,11 @@
   const { collections } = storeToRefs(collectionStore);
   const currentCollectionItems = collections.value?.find(c => c.name == collectionName)?.items;
 
+  const filterValue: Ref<string | null> = ref(null);
+  const showAll: Ref<boolean> = ref(true);
+  const showCardDetails: Ref<boolean> = ref(false);
+  const collectionItem: Ref<CollectionItem | null> = ref(null);
+
   const filteredCollectionItems = computed(()=> {
     let currentFilteredItems = currentCollectionItems;
 
@@ -29,11 +33,6 @@
 
     return currentFilteredItems?.filter(c => c.name.toLowerCase().includes(filterValue.value!.toLowerCase()) || c.description?.toLowerCase().includes(filterValue.value!.toLowerCase()) || c.tags?.includes(filterValue.value!));
   });
-
-  const filterValue: Ref<string | null> = ref(null);
-  const showAll: Ref<boolean> = ref(true);
-  const showCardDetails: Ref<boolean> = ref(false);
-  const collectionItem: Ref<CollectionItem | null> = ref(null);
 
   function onNewCollectionItem() {
     const newCollectionItem: CollectionItem = { 
@@ -56,15 +55,19 @@
 
   function onDialogClose() {
     showCardDetails.value = false;
-    collectionItem.value = null; // clear selected item
+    collectionItem.value = null;
   }
 
   function onDialogSave() {
     showCardDetails.value = false;
     collectionItem.value = null;
-    collectionStore.saveCollections(); // make sure changes persist
+    collectionStore.saveCollections();
   }
-
+  
+  function onOpenCard(editingCard: CollectionItem) {
+    collectionItem.value = editingCard;
+    showCardDetails.value = true;
+  }
 </script>
 
 <template>
@@ -78,7 +81,7 @@
       <button @click="onNewCollectionItem" class="primary-btn">Create new Item</button>
     </div>
     <progress-bar :completed-items="filteredCollectionItems?.filter(c => c.completed == true).length ?? 0" :total-items="filteredCollectionItems?.length ?? 0"> </progress-bar>
-    <collection-items :items="filteredCollectionItems ?? []" v-auto-animate></collection-items>
+    <collection-items :items="filteredCollectionItems ?? []" @open="onOpenCard"></collection-items>
   </div>
   <card-details v-if="collectionItem" :is-visible="showCardDetails" :item="collectionItem" @save="onDialogSave" @close="onDialogClose"></card-details>
 </template>
