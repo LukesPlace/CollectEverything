@@ -6,6 +6,7 @@
   import Tag from './Tag.vue';
   import ToggleButton from './ToggleButton.vue';
   import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+  import HiddenImageFileInput from './HiddenImageFileInput.vue';
 
   const collectionStore = useCollectionStore();
   const props = defineProps<{
@@ -61,8 +62,7 @@ watch(
   <div v-if="isVisible" class="modal-overlay">
     <div class="wrapper">
       <div class="item-image" :class="[{ 'card-incomplete': !localCompleted }]">
-        <img v-if="localImageBase64" :src="localImageBase64" alt="Card image" class="card-image" />
-        <div v-else class="card-placeholder">No image</div>
+        <HiddenImageFileInput v-model="localImageBase64" placeholder-text="Please upload an image"></HiddenImageFileInput>
         <font-awesome-icon v-if="!localCompleted" :icon="['fas', 'lock']" class="lock-icon" />
       </div>
       <div class="modal-content">
@@ -284,7 +284,7 @@ textarea {
 
 .card-placeholder {
   width: 100%;
-  height: 100%;
+  padding-top: 75%; /* 4:3 aspect ratio */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -294,5 +294,6 @@ textarea {
   font-weight: bold;
   text-align: center;
   border-radius: 10px;
+  position: relative;
 }
 </style>
