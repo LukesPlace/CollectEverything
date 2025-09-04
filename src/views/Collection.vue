@@ -48,7 +48,7 @@ import { useRoute } from 'vue-router';
     if (!filterValue.value)
       return currentFilteredItems;
 
-    return currentFilteredItems?.filter(c => c.name.toLowerCase().includes(filterValue.value!.toLowerCase()) || c.description?.toLowerCase().includes(filterValue.value!.toLowerCase()) || c.tags?.includes(filterValue.value!));
+    return currentFilteredItems?.filter(c => c.name.toLowerCase().includes(filterValue.value!.toLowerCase()) || c.description?.toLowerCase().includes(filterValue.value!.toLowerCase()) || c.tags?.includes(filterValue.value!.toLowerCase()) || c.category?.toLowerCase().includes(filterValue.value!.toLowerCase()));
   });
 
   function onNewCollectionItem() {
