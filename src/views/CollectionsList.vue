@@ -1,30 +1,29 @@
 <script setup lang="ts">
-  import { ref, type Ref } from 'vue';
-  import { useCollectionStore, type Collection } from '@/stores/collection';
+  import { ref, type Ref, onMounted } from 'vue';
   import ConfirmationDialog from '@/components/ConfirmationDialog.vue';
-  import { storeToRefs } from 'pinia';
   import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
   import router from '@/router';
   import ProgressBar from '@/components/ProgressBar.vue';
-import { slugify } from '@/utils/string';
+  import { slugify } from '@/utils/string';
+  import { useCollections, type Collection } from '@/composables/useCollections';
 
   const showEditDialog: Ref<boolean> = ref(false);
   const showDeleteDialog: Ref<boolean> = ref(false);
   const editingCollection: Ref<Collection | null> = ref(null);
   const editingCollectionName: Ref<string | null> = ref(null);
-  const collectionStore = useCollectionStore();
-  collectionStore.loadCollections();
-  const { collections } = storeToRefs(collectionStore)
+
+  const { collections, addCollection, removeCollection, saveCollection } = useCollections();
+
 
   function onEditCollection(collectionId: string) {
-    editingCollection.value = collections.value?.find(c => c.id == collectionId) ?? null;
-    editingCollectionName.value = editingCollection.value!.name;
+    editingCollection.value = collections.value.find(c => c.id === collectionId) ?? null;
+    editingCollectionName.value = editingCollection.value?.name ?? null;
     showEditDialog.value = true;
   }
 
   function onDeleteCollection(collectionId: string) {
-    editingCollection.value = collections.value?.find(c => c.id == collectionId) ?? null;
-    editingCollectionName.value = editingCollection.value!.name;
+    editingCollection.value = collections.value.find(c => c.id === collectionId) ?? null;
+    editingCollectionName.value = editingCollection.value?.name ?? null;
     showDeleteDialog.value = true;
   }
 
@@ -33,31 +32,23 @@ import { slugify } from '@/utils/string';
     showDeleteDialog.value = false;
   }
 
-  function onRenameSave() {
-    if(editingCollection.value && editingCollectionName.value) {
-      collectionStore.renameCollection(editingCollection.value?.id, editingCollectionName.value);
+  async function onRenameSave() {
+    if (editingCollection.value && editingCollectionName.value) {
+      editingCollection.value.name = editingCollectionName.value;
+      editingCollection.value.slug = slugify(editingCollectionName.value);
+      await saveCollection(editingCollection.value);
     }
-
     showEditDialog.value = false;
-    collectionStore.saveCollections();
   }
 
-  function onDialogDelete() {
-    const collectionToDelete = collections?.value?.find(c => c.id == editingCollection.value?.id) ?? null;
-    collectionStore.collections = collections?.value?.filter(c => c.id !== collectionToDelete?.id)!;
+  async function onDialogDelete() {
+    if (!editingCollection.value) return;
+    await removeCollection(editingCollection.value.id);
     showDeleteDialog.value = false;
-    collectionStore.saveCollections();
   }
 
-  function onAddNewCollection() {
-    const newCollection: Collection = { 
-      id: crypto.randomUUID(),
-      name: 'New Collection',
-      slug: slugify('New Collection'),
-      items: []
-    }
-    collections.value?.push(newCollection);
-    collectionStore.saveCollections();
+  async function onAddNewCollection() {
+    await addCollection('New Collection');
   }
 
   function onRowClick(url: string) {

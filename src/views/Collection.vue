@@ -1,96 +1,82 @@
 <script setup lang="ts">
-  import CollectionItems from '@/components/CollectionItems.vue';
-  import { ref, type Ref, computed, watch } from 'vue'
-  import { useCollectionStore, type Collection, type CollectionItem } from '@/stores/collection';
-  import { storeToRefs } from 'pinia';
-  import ProgressBar from '@/components/ProgressBar.vue';
-  import ToggleButton from '@/components/ToggleButton.vue';
-  import CardDetails from '@/components/CardDetails.vue';
+import CollectionItems from '@/components/CollectionItems.vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import ProgressBar from '@/components/ProgressBar.vue';
+import ToggleButton from '@/components/ToggleButton.vue';
+import CardDetails from '@/components/CardDetails.vue';
+import { useCollections, type CollectionItem } from '@/composables/useCollections';
 
-  const props = defineProps<{
-    slug: string,
-  }>();
+const props = defineProps<{ slug: string }>();
 
-  const collectionStore = useCollectionStore();
-  const route = useRoute();
+const route = useRoute();
+const { collections, addCollection, addItemToCollection } = useCollections();
 
-  const { collections } = storeToRefs(collectionStore);
-  const collectionSlug: string = props.slug;
-  const currentCollection = collections.value.find(c => c.slug == collectionSlug);
-  const currentCollectionItems = collections.value?.find(c => c.slug == collectionSlug)?.items;
+const filterValue = ref<string | null>(null);
+const showAll = ref(true);
+const showCardDetails = ref(false);
+const collectionItem = ref<CollectionItem | null>(null);
 
-  const filterValue: Ref<string | null> = ref(null);
-  const showAll: Ref<boolean> = ref(true);
-  const showCardDetails: Ref<boolean> = ref(false);
-  const collectionItem: Ref<CollectionItem | null> = ref(null);
+const currentCollection = computed(() =>
+  collections.value.find(c => c.slug === (route.params.slug ?? props.slug))
+);
 
+const currentCollectionItems = computed(() => currentCollection.value?.items ?? []);
 
+const filteredCollectionItems = computed(() => {
+  let items = currentCollectionItems.value;
 
-  // Get the slug from /collection/:slug
-  const routeSlug = computed(() => String(route.params.slug ?? ''));
+  if (!showAll.value) items = items.filter(item => item.completed);
 
-  // When either the route id or store collections change, set currentCollection
-  watch(
-    [routeSlug, () => collectionStore.collections],
-    ([slug]) => {
-      if (slug) collectionStore.setCurrentCollectionBySlug(slug);
-    },
-    { immediate: true }
+  if (!filterValue.value) return items;
+
+  const search = filterValue.value.toLowerCase();
+  return items.filter(item =>
+    item.name.toLowerCase().includes(search) ||
+    item.description?.toLowerCase().includes(search) ||
+    item.tags?.some(tag => tag.toLowerCase().includes(search)) ||
+    item.category?.toLowerCase().includes(search)
   );
+});
 
-  const filteredCollectionItems = computed(()=> {
-    let currentFilteredItems = currentCollectionItems;
-
-    if (!showAll.value)
-      currentFilteredItems = currentFilteredItems?.filter(f => f.completed === true);
-
-    if (!filterValue.value)
-      return currentFilteredItems;
-
-    return currentFilteredItems?.filter(c => c.name.toLowerCase().includes(filterValue.value!.toLowerCase()) || c.description?.toLowerCase().includes(filterValue.value!.toLowerCase()) || c.tags?.includes(filterValue.value!.toLowerCase()) || c.category?.toLowerCase().includes(filterValue.value!.toLowerCase()));
+function onNewCollectionItem() {
+  addItemToCollection(props.slug, {
+    name: 'New collection item',
+    description: null,
+    completed: false,
+    imageBase64: null,
+    tags: [],
+    category: null,
   });
+  showCardDetails.value = true;
+}
 
-  function onNewCollectionItem() {
-    const newCollectionItem: CollectionItem = { 
-      id: crypto.randomUUID(),
-      name: 'New collection item',
-      description: null,
-      completed: false,
-      imageBase64: null,
-      tags: [],
-      category: null,
-    };
+function createNewCollection() {
+  addCollection('My New Collection');
+}
 
-    currentCollectionItems?.push(newCollectionItem);
-    collectionStore.saveCollections();
+function onDialogClose() {
+  showCardDetails.value = false;
+  collectionItem.value = null;
+}
 
-    // Open dialog immediately
-    collectionItem.value = newCollectionItem;
-    showCardDetails.value = true;
-  }
+function onDialogSave() {
+  showCardDetails.value = false;
+  collectionItem.value = null;
+}
 
-  function onDialogClose() {
-    showCardDetails.value = false;
-    collectionItem.value = null;
-  }
+function onOpenCard(editingCard: CollectionItem) {
+  collectionItem.value = editingCard;
+  showCardDetails.value = true;
+}
 
-  function onDialogSave() {
-    showCardDetails.value = false;
-    collectionItem.value = null;
-    collectionStore.saveCollections();
-  }
-  
-  function onOpenCard(editingCard: CollectionItem) {
-    collectionItem.value = editingCard;
-    showCardDetails.value = true;
-  }
+watch(() => route.params.slug, () => {});
 </script>
 
 <template>
   <div class="collection">
     <div class="collection-header">
-      <h1 class="collection-title" :title="collectionSlug">Your {{ currentCollection?.name }}</h1>
+      <h1 class="collection-title" :title="currentCollection?.slug">Your {{ currentCollection?.name }}</h1>
       <toggle-button v-model="showAll" unchecked-state="Show missing?" checked-state="Hide missing?">Show missing?</toggle-button>
       <div class="search-filter">
         <input v-model="filterValue" type="text" placeholder="Search by name or description...">

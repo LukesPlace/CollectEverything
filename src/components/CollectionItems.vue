@@ -1,7 +1,7 @@
 <script setup lang="ts">
-  import type { Collection, CollectionItem } from '@/stores/collection';
   import Card from './Card.vue';
   import { computed } from 'vue';
+  import type { CollectionItem } from '@/composables/useCollections';
 
   const props = defineProps<{
     items: Array<CollectionItem>
@@ -11,6 +11,7 @@
     (e: 'open', item: CollectionItem): void
   }>();
 
+  // toDo: User selection on how to view, how many per row etc...
   // Group items by category
   const groupedItems = computed(() => {
     return props.items.reduce((acc, item) => {
@@ -36,10 +37,6 @@
         </div>
       </div>
     </div>
-    <!-- <div v-for="item in props.items">
-      <card :collection-item="item"></card>
-    </div> -->
-    
 </template>
 
 <style scoped>

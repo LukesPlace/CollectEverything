@@ -1,8 +1,7 @@
 <script setup lang="ts">
   import { RouterLink, RouterView } from 'vue-router'
   import router from './router';
-
-
+  
   function onHomeButtonClick() {
     router.push('/');
   }
@@ -21,7 +20,7 @@
       </nav>
     </div>
   </header>
-
+  
   <RouterView />
 </template>
 

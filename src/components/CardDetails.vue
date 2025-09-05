@@ -1,14 +1,16 @@
 <script setup lang="ts">
   import { ref, watch, defineEmits, type Ref } from 'vue';
-  import { type CollectionItem } from '@/stores/collection';
-  import { useCollectionStore } from '@/stores/collection';
   import FileInput from './FileInput.vue';
   import Tag from './Tag.vue';
   import ToggleButton from './ToggleButton.vue';
   import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
   import HiddenImageFileInput from './HiddenImageFileInput.vue';
+  import { useCollections, type CollectionItem } from '@/composables/useCollections';
+  import { useCollectionStore } from '@/stores/collection';
 
-  const collectionStore = useCollectionStore();
+  // toDo: Investigate using store here
+  // const collectionStore = useCollectionStore();
+  // const { collections } = useCollections();
   const props = defineProps<{
     isVisible: Boolean,
     item: CollectionItem,
@@ -18,7 +20,7 @@
 
   // Local data to edit card details before saving. Dont apply on cancel.
   const localName: Ref<string> = ref(props.item.name);
-  const localDescription: Ref<string | null> = ref(props.item.description);
+  const localDescription: Ref<string | null> = ref(props.item.description ?? null);
   const localCompleted: Ref<boolean> = ref(props.item.completed);
   const localImageBase64: Ref<string | null> = ref(null); // Store the base64 string
   const localTags: Ref<Array<string>> = ref(props.item.tags ?? []);
@@ -32,9 +34,9 @@ watch(
   ([isVisible]) => {
     if (isVisible) {
       localName.value = props.item.name;
-      localDescription.value = props.item.description;
+      localDescription.value = props.item.description ?? null;
       localCompleted.value = props.item.completed;
-      localImageBase64.value = props.item.imageBase64;
+      localImageBase64.value = props.item.imageBase64 ?? null;
       localTags.value = props.item.tags ?? [];
       localCategory.value = props.item.category ?? null;
     }
@@ -46,14 +48,15 @@ watch(
     emit('close');
   }
 
-  function saveChanges() {
+  async function saveChanges() {
     props.item.name = localName.value;
     props.item.description = localDescription.value;
     props.item.completed = localCompleted.value;
     props.item.imageBase64 = localImageBase64.value;
     props.item.tags = localTags.value;
     props.item.category = localCategory.value;
-    collectionStore.saveCollections();
+    // Composable auto-saves collections on change
+    // collectionStore.saveCollection()
     emit('save');
   }
 </script>

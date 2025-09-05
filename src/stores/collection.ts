@@ -1,107 +1,57 @@
-import { ref, computed } from 'vue'
-import { defineStore } from 'pinia'
+import { defineStore } from 'pinia';
 import { slugify } from '@/utils/string';
+import { useCollections, type Collection, type CollectionItem } from '@/composables/useCollections';
 
-export interface CollectionItem {
-  id: string;
-  name: string;
-  description: string | null;
-  tags: Array<string>;
-  category: string | null;
-  completed: boolean;
-  imageBase64: string | null;
-}
-
-export interface Collection {
-  id: string;
-  name: string;
-  slug: string;
-  items: Array<CollectionItem>;
-}
-
-interface CollectionState {
-  collections: Array<Collection>;
-  currentCollection: Collection | null;
-  editingCardId: string | null;
-}
+const {
+  collections,
+  addCollection: addCollectionToDb,
+  addItemToCollection: addItemToCollectionInDb,
+  saveCollection: saveCollectionInDb,
+  removeCollection: removeCollectionFromDb,
+} = useCollections();
 
 export const useCollectionStore = defineStore('collection', {
-  state: (): CollectionState => ({
-    collections: JSON.parse(localStorage.getItem('collection') ?? '[]'),
-    currentCollection: null,
-    editingCardId: null,
+  state: () => ({
+    editingCardId: null as string | null,
   }),
+
   actions: {
-    loadCollections() {
-      const raw = localStorage.getItem('collection') ?? '[]';
-      const collections: Collection[] = JSON.parse(raw);
-
-      // Add slug to existing collections if missing
-      this.collections = collections.map(c => ({
-        ...c,
-        slug: c.slug ?? slugify(c.name),
-      }));
-    },
-    saveCollections() {
-      localStorage.setItem('collection', JSON.stringify(this.collections));
-    },
-    renameCollection(id: string, newName: string) {
-      const collection = this.collections.find(c => c.id === id);
-      if (collection) {
-        collection.name = newName;
-        collection.slug = slugify(newName);
-        this.saveCollections();
-      } 
-    },
-    setCurrentCollectionBySlug(slug: string) {
-      this.currentCollection = this.collections.find(c => c.slug === slug) ?? null;
-    },
-
-    addCollection(name: string) {
-      const newCollection: Collection = {
-        id: crypto.randomUUID(),
-        name,
-        slug: slugify(name),
-        items: [],
-      };
-      this.collections.push(newCollection);
-      this.currentCollection = newCollection;
-      this.saveCollections();
+    async addCollection(name: string) {
+      const newCollection = await addCollectionToDb(name);
       return newCollection;
     },
-
-    addItemToCurrentCollection(itemData: Omit<CollectionItem, 'id'>) {
-      if (!this.currentCollection) return null;
-
-      const newItem: CollectionItem = {
-        id: crypto.randomUUID(),
-        ...itemData,
-      };
-
-      this.currentCollection.items.push(newItem);
-      this.editingCardId = newItem.id; // Open modal for this card
-      this.saveCollections();
+    async addItemToCollection(slug: string, itemData: Omit<CollectionItem, 'id'>) {
+      const newItem = await addItemToCollectionInDb(slug, itemData);
       return newItem;
+    },
+
+    async renameCollection(collection: Collection, newName: string) {
+      collection.name = newName;
+      collection.slug = slugify(newName);
+      await saveCollectionInDb(collection);
+    },
+
+    async updateItem(collection: Collection, updatedItem: CollectionItem) {
+      const index = collection.items.findIndex(i => i.id === updatedItem.id);
+      if (index !== -1) {
+        collection.items[index] = updatedItem;
+        await saveCollectionInDb(collection);
+      }
+    },
+
+    async removeCollection(id: string) {
+      await removeCollectionFromDb(id);
     },
 
     setEditingCard(cardId: string | null) {
       this.editingCardId = cardId;
     },
-
-    updateItem(updatedItem: CollectionItem) {
-      if (!this.currentCollection) return;
-
-      const index = this.currentCollection.items.findIndex(i => i.id === updatedItem.id);
-      if (index !== -1) {
-        this.currentCollection.items[index] = updatedItem;
-        this.saveCollections();
-      }
-    },
   },
 
   getters: {
-    currentItems: (state) => state.currentCollection?.items ?? [],
-    getItemById: (state) => (id: string) =>
-      state.currentCollection?.items.find(i => i.id === id) ?? null,
+    getItemById: () => (collection: Collection, id: string) =>
+      collection.items.find(i => i.id === id) ?? null,
+
+    allCollections: () => collections.value,
   },
 });

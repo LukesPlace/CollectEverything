@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { useCollectionStore, type CollectionItem } from '@/stores/collection';
-import CardDetails from './CardDetails.vue';
-import { ref, type Ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import type { CollectionItem } from '@/composables/useCollections';
 
 const props = defineProps<{
   collectionItem: CollectionItem
@@ -48,8 +46,6 @@ function onShowCardDetails() {
       <p class="card-description">{{ props.collectionItem.description }}</p>
     </div>
   </div>
-
-  <!-- <card-details :is-visible="showCardDetails" :item="collectionItem" @save="onDialogSave" @close="onDialogClose"></card-details> -->
 </template>
 
 <style scoped>
