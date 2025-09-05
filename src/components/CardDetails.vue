@@ -285,18 +285,4 @@ textarea {
   border-radius: 10px;
 }
 
-.card-placeholder {
-  width: 100%;
-  padding-top: 75%; /* 4:3 aspect ratio */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #ddd;
-  color: #555;
-  font-size: 1rem;
-  font-weight: bold;
-  text-align: center;
-  border-radius: 10px;
-  position: relative;
-}
 </style>

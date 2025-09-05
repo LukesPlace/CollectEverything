@@ -39,8 +39,8 @@ const filteredCollectionItems = computed(() => {
   );
 });
 
-function onNewCollectionItem() {
-  addItemToCollection(props.slug, {
+async function onNewCollectionItem() {
+  const addedCollectionItem = await addItemToCollection(props.slug, {
     name: 'New collection item',
     description: null,
     completed: false,
@@ -49,6 +49,7 @@ function onNewCollectionItem() {
     category: null,
   });
   showCardDetails.value = true;
+  collectionItem.value = addedCollectionItem;
 }
 
 function createNewCollection() {
